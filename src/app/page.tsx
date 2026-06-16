@@ -10,7 +10,7 @@ import CTABanner from "@/components/CTABanner";
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen flex-col overflow-x-hidden bg-[#F8FAFC] text-slate-950">
+    <div className="flex min-h-screen flex-col overflow-x-hidden bg-[#fcfdff] text-slate-950">
       <Header />
       <main className="mx-auto max-w-7xl flex-1 px-6 pt-8 pb-24 lg:px-8">
         <Hero />
