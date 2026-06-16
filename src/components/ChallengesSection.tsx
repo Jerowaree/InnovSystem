@@ -24,8 +24,8 @@ const challenges = [
 
 export default function ChallengesSection() {
   return (
-    <section className="mt-16 grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
-      <div className="space-y-6">
+    <section className="mt-16 grid min-w-0 gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+      <div className="min-w-0 space-y-6">
         <div className="max-w-xl">
           <h2 className="text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">
             ¿Qué desafíos enfrentan las empresas de transporte?
@@ -35,12 +35,12 @@ export default function ChallengesSection() {
           {challenges.map((challenge) => (
             <div
               key={challenge.title}
-              className="shadow-soft flex gap-4 rounded-[2rem] bg-white p-5"
+              className="shadow-soft flex min-w-0 gap-4 rounded-[2rem] bg-white p-5"
             >
-              <span className="mt-1 inline-flex h-12 w-12 items-center justify-center rounded-3xl bg-blue-100 text-blue-700">
+              <span className="mt-1 inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-3xl bg-blue-100 text-blue-700">
                 <CheckCircle2 className="h-6 w-6" />
               </span>
-              <div>
+              <div className="min-w-0">
                 <p className="text-base font-semibold text-slate-950">
                   {challenge.title}
                 </p>
@@ -53,7 +53,7 @@ export default function ChallengesSection() {
         </div>
       </div>
 
-      <div className="shadow-soft relative rounded-[2rem] bg-white p-6 sm:p-8">
+      <div className="shadow-soft relative min-w-0 overflow-hidden rounded-[2rem] bg-white p-5 sm:p-8">
         <div className="absolute top-6 left-6 inline-flex h-12 w-12 items-center justify-center rounded-3xl bg-slate-100 text-slate-700">
           <Truck className="h-6 w-6" />
         </div>
@@ -68,7 +68,7 @@ export default function ChallengesSection() {
           alt="Truck illustration"
           width={980}
           height={640}
-          className="mx-auto h-auto w-full rounded-[1.5rem] object-contain"
+          className="mx-auto h-auto w-full max-w-full rounded-[1.5rem] object-contain"
           priority
         />
       </div>

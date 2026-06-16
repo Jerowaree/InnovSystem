@@ -7,22 +7,21 @@ const reportRows = [
 
 export default function ReportsSection() {
   return (
-    <section className="mt-16 space-y-8">
-      {/* Top row: description left, table right */}
-      <div className="grid gap-8 lg:grid-cols-[0.45fr_1fr] lg:items-start">
-        <div className="rounded-[1.5rem] border border-slate-200 bg-white p-8">
-          <p className="text-sm font-semibold tracking-[0.24em] text-slate-500 uppercase">
+    <section className="mt-16 space-y-6 sm:space-y-8">
+      <div className="grid gap-6 lg:grid-cols-[0.45fr_1fr] lg:items-start">
+        <div className="rounded-[1.5rem] border border-slate-200 bg-white p-5 sm:p-8">
+          <p className="text-xs font-semibold tracking-[0.22em] text-slate-500 uppercase sm:text-sm sm:tracking-[0.24em]">
             Reportes automáticos
           </p>
           <h2 className="mt-4 text-2xl font-semibold text-slate-950">
             Listos para descargar
           </h2>
-          <p className="mt-4 text-sm text-slate-600">
+          <p className="mt-4 text-sm leading-7 text-slate-600">
             Genera reportes en Excel o PDF con un solo clic. Ahorra tiempo y
             trabaja con información confiable y actualizada.
           </p>
 
-          <div className="mt-6 flex items-center gap-4">
+          <div className="mt-6 flex flex-wrap items-center gap-3">
             <div className="inline-flex items-center gap-3 rounded-md bg-slate-50 px-3 py-2">
               <svg
                 width="20"
@@ -52,22 +51,22 @@ export default function ReportsSection() {
           </div>
         </div>
 
-        <div className="shadow-soft rounded-[1.5rem] border border-slate-200 bg-white p-6">
-          <div className="flex items-start justify-between">
+        <div className="shadow-soft rounded-[1.5rem] border border-slate-200 bg-white p-5 sm:p-6">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <h3 className="text-lg font-semibold text-slate-900">
               Reporte de viajes
             </h3>
-            <div className="flex gap-2">
-              <button className="inline-flex items-center gap-2 rounded-md bg-emerald-50 px-3 py-2 text-sm font-medium text-emerald-700">
+            <div className="flex flex-col gap-2 sm:flex-row">
+              <button className="inline-flex items-center justify-center gap-2 rounded-md bg-emerald-50 px-3 py-2 text-sm font-medium text-emerald-700">
                 Exportar Excel
               </button>
-              <button className="inline-flex items-center gap-2 rounded-md bg-red-50 px-3 py-2 text-sm font-medium text-red-700">
+              <button className="inline-flex items-center justify-center gap-2 rounded-md bg-red-50 px-3 py-2 text-sm font-medium text-red-700">
                 Exportar PDF
               </button>
             </div>
           </div>
 
-          <div className="mt-4 overflow-hidden rounded-xl border border-slate-100">
+          <div className="mt-4 hidden overflow-hidden rounded-xl border border-slate-100 md:block">
             <div className="grid grid-cols-6 gap-2 bg-slate-50 px-5 py-3 text-sm tracking-[0.12em] text-slate-500 uppercase">
               <span className="col-span-2">Fecha</span>
               <span>Ruta</span>
@@ -89,19 +88,54 @@ export default function ReportsSection() {
               </div>
             ))}
           </div>
+
+          <div className="mt-4 grid gap-3 md:hidden">
+            {reportRows.map((r) => (
+              <div
+                key={r.join("-")}
+                className="rounded-xl border border-slate-100 bg-slate-50/60 p-4"
+              >
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-xs font-semibold tracking-[0.14em] text-slate-500 uppercase">
+                    {r[0]}
+                  </span>
+                  <span className="text-sm font-semibold text-slate-950">
+                    {r[4]}
+                  </span>
+                </div>
+                <div className="mt-3 grid gap-2 text-sm text-slate-700">
+                  <p>
+                    <span className="font-medium text-slate-500">Ruta:</span>{" "}
+                    {r[1]}
+                  </p>
+                  <p>
+                    <span className="font-medium text-slate-500">
+                      Vehículo:
+                    </span>{" "}
+                    {r[2]}
+                  </p>
+                  <p>
+                    <span className="font-medium text-slate-500">
+                      Conductor:
+                    </span>{" "}
+                    {r[3]}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* Second row: SUNAT info */}
-      <div className="grid gap-8 lg:grid-cols-[0.45fr_1fr] lg:items-start">
-        <div className="rounded-[1.5rem] border border-slate-200 bg-white p-8">
-          <p className="text-sm font-semibold tracking-[0.24em] text-slate-500 uppercase">
+      <div className="grid gap-6 lg:grid-cols-[0.45fr_1fr] lg:items-start">
+        <div className="rounded-[1.5rem] border border-slate-200 bg-white p-5 sm:p-8">
+          <p className="text-xs font-semibold tracking-[0.22em] text-slate-500 uppercase sm:text-sm sm:tracking-[0.24em]">
             Información confiable con SUNAT
           </p>
           <h3 className="mt-4 text-2xl font-semibold text-slate-950">
             Consulta la información oficial de tu empresa
           </h3>
-          <p className="mt-3 text-sm text-slate-600">
+          <p className="mt-3 text-sm leading-7 text-slate-600">
             Valida tus datos y cumple con tus obligaciones consultando
             directamente con SUNAT.
           </p>
@@ -113,8 +147,8 @@ export default function ReportsSection() {
           </a>
         </div>
 
-        <div className="shadow-soft rounded-[1.5rem] border border-slate-200 bg-white p-6">
-          <div className="flex items-start justify-between">
+        <div className="shadow-soft rounded-[1.5rem] border border-slate-200 bg-white p-5 sm:p-6">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div>
               <p className="text-xs tracking-[0.18em] text-slate-400 uppercase">
                 Información de la empresa
@@ -123,7 +157,7 @@ export default function ReportsSection() {
                 TRANSPORTES DEL SUR S.A.C.
               </p>
             </div>
-            <div className="text-right">
+            <div className="text-left sm:text-right">
               <p className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">
                 ACTIVO
               </p>

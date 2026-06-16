@@ -5,7 +5,13 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { logoutUser } from "@/services/authService";
 
-export default function DashboardLogoutButton() {
+interface DashboardLogoutButtonProps {
+  className?: string;
+}
+
+export default function DashboardLogoutButton({
+  className = "",
+}: DashboardLogoutButtonProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -23,7 +29,7 @@ export default function DashboardLogoutButton() {
       type="button"
       onClick={handleLogout}
       disabled={isLoading}
-      className="inline-flex h-11 items-center gap-2 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm font-semibold text-red-600 transition hover:border-red-300 hover:bg-red-100 hover:text-red-700 disabled:opacity-60"
+      className={`inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm font-semibold text-red-600 transition hover:border-red-300 hover:bg-red-100 hover:text-red-700 disabled:opacity-60 ${className}`}
     >
       <LogOut className="h-4 w-4" />
       {isLoading ? "Saliendo..." : "Cerrar Sesión"}

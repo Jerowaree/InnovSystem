@@ -17,7 +17,7 @@ function getMovementTone(movementType: string) {
 export default function MovementTable({ movements }: MovementTableProps) {
   return (
     <section className="rounded-[28px] border border-white/80 bg-white px-5 py-5 shadow-[0_30px_60px_-45px_rgba(15,23,42,0.35)]">
-      <div className="mb-5 flex items-center justify-between gap-4">
+      <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
         <div>
           <h2 className="text-base font-semibold text-slate-950">
             Últimos Movimientos
@@ -31,7 +31,47 @@ export default function MovementTable({ movements }: MovementTableProps) {
         </span>
       </div>
 
-      <div className="overflow-x-auto">
+      <div className="grid gap-3 md:hidden">
+        {movements.length === 0 ? (
+          <div className="rounded-2xl border border-slate-100 bg-slate-50 px-4 py-6 text-center text-slate-500">
+            No hay movimientos disponibles.
+          </div>
+        ) : (
+          movements.map((movement) => (
+            <article
+              key={movement.id}
+              className="rounded-2xl border border-slate-100 bg-slate-50/70 px-4 py-4"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-sm font-semibold text-slate-900">
+                    {movement.document_type}
+                  </p>
+                  <p className="mt-1 text-xs text-slate-500">
+                    {movement.movement_date}
+                  </p>
+                </div>
+                <span
+                  className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${getMovementTone(
+                    movement.movement_type
+                  )}`}
+                >
+                  {movement.movement_type}
+                </span>
+              </div>
+
+              <div className="mt-3 grid gap-2 text-sm text-slate-600">
+                <p>{movement.description}</p>
+                <p className="font-semibold text-slate-950">
+                  S/ {movement.amount.toLocaleString("en-US")}
+                </p>
+              </div>
+            </article>
+          ))
+        )}
+      </div>
+
+      <div className="hidden overflow-x-auto md:block">
         <table className="min-w-full text-left text-sm">
           <thead>
             <tr className="border-b border-slate-100 text-xs tracking-[0.18em] text-slate-400 uppercase">

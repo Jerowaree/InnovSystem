@@ -102,7 +102,7 @@ export default function DashboardCharts({
   totalPurchases,
 }: DashboardChartsProps) {
   const { containerRef, width } = useMeasuredWidth();
-  const lineChartWidth = Math.max(width - 40, 320);
+  const lineChartWidth = Math.max(width - 24, 220);
   const hasLineData = series.some(
     (point) => point.sales > 0 || point.purchases > 0
   );

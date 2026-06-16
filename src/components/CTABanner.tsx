@@ -1,55 +1,50 @@
 import Image from "next/image";
-import Link from "next/link";
-import { MapPin, ShieldCheck, Sparkles } from "lucide-react";
+import { MapPin } from "lucide-react";
 
 export default function CTABanner() {
   return (
-    <section className="px-6 pb-20 lg:px-8">
-      <div className="mx-auto max-w-7xl overflow-hidden rounded-[1.2rem] bg-[linear-gradient(90deg,_#2563eb_0%,_#2f6ff0_42%,_#3b82f6_100%)] shadow-[0_20px_50px_rgba(37,99,235,0.22)]">
-        <div className="flex min-h-[132px] items-center gap-5 px-5 py-4 sm:px-6 lg:gap-8 lg:px-10">
-          <div className="relative hidden h-[92px] w-[210px] shrink-0 md:block">
+    <section className="px-4 pb-20 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl overflow-hidden rounded-[1.2rem] bg-[#2563eb] shadow-[0_20px_50px_rgba(37,99,235,0.22)]">
+        <div className="relative flex flex-col items-center justify-between gap-6 px-6 py-10 md:flex-row md:gap-12 md:px-12 md:py-6 lg:px-16">
+          
+          {/* Left: Truck Image */}
+          <div className="relative w-full max-w-[280px] h-[130px] shrink-0 md:max-w-[320px] md:h-[150px] lg:max-w-[360px] lg:h-[160px] flex items-center justify-center">
             <Image
               src="/truckimg-cutout.png"
               alt="Operación de transporte"
               fill
-              className="object-contain object-left"
+              className="object-contain object-left md:object-center"
               priority
             />
           </div>
 
-          <div className="min-w-0 flex-1 text-white">
-            <p className="text-[1.05rem] font-semibold tracking-[-0.02em] sm:text-[1.2rem]">
-              Lleva tu operación de transporte
-            </p>
-            <h3 className="mt-0.5 text-[1.15rem] leading-tight font-semibold tracking-[-0.03em] text-white sm:text-[1.4rem]">
-              al siguiente nivel
+          {/* Middle: Text Content */}
+          <div className="flex-1 text-center text-white md:text-left md:max-w-xl">
+            <h3 className="text-xl font-bold leading-snug tracking-tight sm:text-2xl lg:text-[1.8rem]">
+              Lleva tu operación de transporte al siguiente nivel
             </h3>
-            <p className="mt-1.5 max-w-2xl text-xs leading-6 text-blue-100/90 sm:text-sm">
-              InnovSystem centraliza tu gestión con reportes, control y
-              visibilidad operativa.
+            <p className="mt-2 text-xs text-blue-100/90 sm:text-sm leading-relaxed">
+              Únete a InnovSystem y transforma la gestión de tu flota con datos y tecnología.
             </p>
           </div>
 
-          <div className="hidden items-center gap-2 text-blue-100/90 lg:flex">
-            <span className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/18 bg-white/10">
-              <Sparkles className="h-4 w-4" />
-            </span>
-            <span className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/18 bg-white/10">
-              <MapPin className="h-4 w-4" />
-            </span>
-            <span className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/18 bg-white/10">
-              <ShieldCheck className="h-4 w-4" />
-            </span>
+          {/* Right: Dotted Route with Map Pins */}
+          <div className="hidden md:block shrink-0 relative w-36 h-20 lg:w-44 lg:h-24 opacity-80">
+            <svg viewBox="0 0 200 100" fill="none" className="w-full h-full stroke-white/40 stroke-[2]" strokeDasharray="6 6">
+              <path d="M 20 75 C 60 75, 50 30, 95 30 C 140 30, 130 75, 175 75" />
+            </svg>
+            <div className="absolute top-[28px] left-[45px] text-white/50 lg:top-[38px] lg:left-[55px]">
+              <MapPin className="h-6 w-6 lg:h-7 lg:w-7" />
+            </div>
+            <div className="absolute top-[5px] right-[15px] text-white/50 lg:top-[12px] lg:right-[20px]">
+              <MapPin className="h-6 w-6 lg:h-7 lg:w-7" />
+            </div>
           </div>
 
-          <Link
-            href="/register"
-            className="inline-flex shrink-0 items-center justify-center rounded-xl bg-white px-4 py-2.5 text-sm font-semibold text-blue-700 shadow-[0_12px_24px_rgba(255,255,255,0.14)] transition hover:bg-blue-50 sm:px-5"
-          >
-            Comenzar ahora
-          </Link>
         </div>
       </div>
     </section>
   );
 }
+
+

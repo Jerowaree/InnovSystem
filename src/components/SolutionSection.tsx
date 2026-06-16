@@ -1,59 +1,50 @@
-import { FileText, MapPin, Layers, TrendingUp } from "lucide-react";
+import { Shield, MapPin, DollarSign, FileBarChart2 } from "lucide-react";
 
 const solutionItems = [
   {
     title: "Gestión de flota",
-    text: "Control total de tus unidades, conductores y documentos.",
-    icon: <Layers className="h-6 w-6" />,
+    text: "Control de tus unidades, conductores y documentos.",
+    icon: <Shield className="h-6 w-6 text-blue-600" />,
   },
   {
     title: "Monitoreo en tiempo real",
-    text: "Ubica tus vehículos y visualiza rutas en tiempo real.",
-    icon: <MapPin className="h-6 w-6" />,
+    text: "Ubicación de tus unidades y estado de los viajes.",
+    icon: <MapPin className="h-6 w-6 text-blue-600" />,
   },
   {
     title: "Control de costos",
-    text: "Analiza gastos y mejora la rentabilidad por viaje.",
-    icon: <TrendingUp className="h-6 w-6" />,
+    text: "Detalle de gastos como peajes, viáticos y combustible.",
+    icon: <DollarSign className="h-6 w-6 text-blue-600" />,
   },
   {
     title: "Reportes inteligentes",
-    text: "Genera reportes automáticos y toma mejores decisiones.",
-    icon: <FileText className="h-6 w-6" />,
+    text: "Informes financieros automáticos para tomar decisiones.",
+    icon: <FileBarChart2 className="h-6 w-6 text-blue-600" />,
   },
 ];
 
 export default function SolutionSection() {
   return (
-    <section className="shadow-soft mt-16 rounded-[2rem] bg-slate-50 px-6 py-10 sm:px-10">
-      <div className="mx-auto max-w-7xl space-y-8">
-        <div className="text-center">
-          <p className="text-sm font-semibold tracking-[0.24em] text-slate-500 uppercase">
-            La solución integral para tu operación de transporte
-          </p>
-          <h2 className="mx-auto mt-6 text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">
-            La solución integral para tu operación de transporte
-          </h2>
-          <p className="mx-auto mt-4 max-w-xl text-slate-600">
-            Gestiona tu flota, obtén visibilidad en tiempo real, controla costos
-            y genera reportes inteligentes desde un mismo lugar.
-          </p>
-        </div>
-
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+    <section className="w-full bg-[#f8fafc] border-y border-slate-200/50 py-12 my-12">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <h3 className="text-center text-sm font-semibold tracking-[0.2em] text-slate-900 uppercase">
+          La solución integral para tu operación de transporte
+        </h3>
+        
+        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {solutionItems.map((item) => (
             <div
               key={item.title}
-              className="flex items-start gap-4 rounded-[2rem] border border-slate-200/80 bg-white p-5 shadow-sm shadow-blue-100/50"
+              className="flex items-start gap-4 rounded-xl border border-slate-200/80 bg-white p-5 shadow-sm"
             >
-              <div className="flex h-14 w-14 items-center justify-center rounded-3xl bg-blue-50 text-blue-700 shadow-sm shadow-blue-100/70">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-blue-50">
                 {item.icon}
               </div>
-              <div>
-                <h3 className="text-lg font-semibold text-slate-950">
+              <div className="space-y-1">
+                <h4 className="text-sm font-bold text-slate-900">
                   {item.title}
-                </h3>
-                <p className="mt-2 text-sm leading-6 text-slate-600">
+                </h4>
+                <p className="text-xs text-slate-500 leading-normal">
                   {item.text}
                 </p>
               </div>
@@ -64,3 +55,5 @@ export default function SolutionSection() {
     </section>
   );
 }
+
+

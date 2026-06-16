@@ -253,42 +253,44 @@ export default function ReportsWorkspace({ data }: ReportsWorkspaceProps) {
               Historial de Reportes Generados
             </h2>
 
-            <div className="mt-5 overflow-hidden rounded-2xl border border-slate-100">
-              <div className="grid grid-cols-[1.1fr_1.4fr_0.9fr_0.8fr_1fr_0.8fr_0.7fr] gap-3 bg-slate-50 px-4 py-3 text-xs font-medium tracking-[0.14em] text-slate-400 uppercase">
-                <span>Fecha</span>
-                <span>Reporte</span>
-                <span>Período</span>
-                <span>Formato</span>
-                <span>Generado por</span>
-                <span>Estado</span>
-                <span>Acción</span>
-              </div>
-
-              {viewModel.reports.map((report) => (
-                <div
-                  key={report.id}
-                  className="grid grid-cols-[1.1fr_1.4fr_0.9fr_0.8fr_1fr_0.8fr_0.7fr] gap-3 border-t border-slate-100 px-4 py-4 text-sm text-slate-700"
-                >
-                  <span>{report.generatedAt}</span>
-                  <span className="flex items-center gap-2 font-medium text-slate-900">
-                    <FileSpreadsheet className="h-4 w-4 text-[#16A34A]" />
-                    {report.title}
-                  </span>
-                  <span>{selectedPeriod.label}</span>
-                  <span>xlsx</span>
-                  <span>Administrador</span>
-                  <span className="inline-flex w-fit rounded-full bg-[#EAF7EF] px-2.5 py-1 text-xs font-semibold text-[#16A34A]">
-                    Completado
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => downloadEmptyExcel(report.title)}
-                    className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 text-slate-500 transition hover:border-slate-300 hover:text-slate-700"
-                  >
-                    <Download className="h-4 w-4" />
-                  </button>
+            <div className="mt-5 overflow-x-auto rounded-2xl border border-slate-100">
+              <div className="min-w-[760px]">
+                <div className="grid grid-cols-[1.1fr_1.4fr_0.9fr_0.8fr_1fr_0.8fr_0.7fr] gap-3 bg-slate-50 px-4 py-3 text-xs font-medium tracking-[0.14em] text-slate-400 uppercase">
+                  <span>Fecha</span>
+                  <span>Reporte</span>
+                  <span>Período</span>
+                  <span>Formato</span>
+                  <span>Generado por</span>
+                  <span>Estado</span>
+                  <span>Acción</span>
                 </div>
-              ))}
+
+                {viewModel.reports.map((report) => (
+                  <div
+                    key={report.id}
+                    className="grid grid-cols-[1.1fr_1.4fr_0.9fr_0.8fr_1fr_0.8fr_0.7fr] gap-3 border-t border-slate-100 px-4 py-4 text-sm text-slate-700"
+                  >
+                    <span>{report.generatedAt}</span>
+                    <span className="flex items-center gap-2 font-medium text-slate-900">
+                      <FileSpreadsheet className="h-4 w-4 text-[#16A34A]" />
+                      {report.title}
+                    </span>
+                    <span>{selectedPeriod.label}</span>
+                    <span>xlsx</span>
+                    <span>Administrador</span>
+                    <span className="inline-flex w-fit rounded-full bg-[#EAF7EF] px-2.5 py-1 text-xs font-semibold text-[#16A34A]">
+                      Completado
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => downloadEmptyExcel(report.title)}
+                      className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 text-slate-500 transition hover:border-slate-300 hover:text-slate-700"
+                    >
+                      <Download className="h-4 w-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
             </div>
           </article>
 
