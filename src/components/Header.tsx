@@ -32,7 +32,7 @@ export default function Header() {
         <div className="hidden items-center gap-3 md:flex">
           <Link
             href="/login"
-            className="rounded-2xl border border-slate-300 bg-white px-5 py-3 text-sm font-medium text-slate-700 transition hover:border-slate-400 hover:bg-slate-50"
+            className="rounded-2xl bg-white px-5 py-3 text-sm font-medium text-slate-700 transition hover:border-slate-400 hover:bg-slate-50"
           >
             Iniciar sesión
           </Link>
