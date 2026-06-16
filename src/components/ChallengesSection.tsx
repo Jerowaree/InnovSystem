@@ -31,20 +31,20 @@ export default function ChallengesSection() {
             ¿Qué desafíos enfrentan las empresas de transporte?
           </h2>
         </div>
-        <div className="space-y-4">
+        <div className="space-y-2.5">
           {challenges.map((challenge) => (
             <div
               key={challenge.title}
-              className="shadow-soft flex min-w-0 gap-4 rounded-[2rem] bg-white p-5"
+              className="flex min-w-0 gap-4 rounded-xl px-4 py-3.5 shadow-[0_4px_20px_rgba(0,0,0,0.02)]"
             >
-              <span className="mt-1 inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-3xl bg-blue-100 text-blue-700">
-                <CheckCircle2 className="h-6 w-6" />
+              <span className="mt-0.5 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
+                <CheckCircle2 className="h-5 w-5" />
               </span>
               <div className="min-w-0">
-                <p className="text-base font-semibold text-slate-950">
+                <p className="text-sm font-bold text-slate-900">
                   {challenge.title}
                 </p>
-                <p className="mt-1 text-sm text-slate-500">
+                <p className="mt-0.5 text-xs leading-normal text-slate-500">
                   {challenge.description}
                 </p>
               </div>

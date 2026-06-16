@@ -2,14 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  Bell,
-  ChevronDown,
-  Menu,
-  Search,
-  Truck,
-  X,
-} from "lucide-react";
+import { Bell, ChevronDown, Menu, Search, Truck, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import Logo from "@/components/Logo";
 import DashboardLogoutButton from "@/components/dashboard/DashboardLogoutButton";
@@ -115,24 +108,43 @@ export default function DashboardShell({
           <DashboardNavigation searchQuery={moduleSearchQuery} />
 
           <div className="mt-auto space-y-4">
-            <div className="rounded-[14px] border border-slate-200 bg-slate-50/70 px-4 py-4 shadow-[0_18px_36px_-34px_rgba(15,23,42,0.35)]">
-              <div className="flex items-start gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-200/70 text-slate-700">
-                  <Truck className="h-5 w-5" />
+            <div className="overflow-hidden bg-[linear-gradient(180deg,_#ffffff_0%,_#f8fbff_100%)] shadow-[0_20px_45px_-34px_rgba(37,99,235,0.35)]">
+              <div className="h-1.5 w-full bg-[linear-gradient(90deg,_#2563EB_0%,_#60A5FA_100%)]" />
+              <div className="px-4 py-4">
+                <div className="mb-3 flex items-center justify-between gap-3">
+                  <p className="text-[11px] font-semibold tracking-[0.16em] text-slate-400 uppercase">
+                    Empresa activa
+                  </p>
+                  <span className="inline-flex items-center rounded-full bg-emerald-50 px-2.5 py-1 text-[10px] font-semibold text-emerald-600">
+                    Operativa
+                  </span>
                 </div>
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm leading-5 font-semibold break-words text-slate-950">
-                    {viewModel.company.business_name}
-                  </p>
-                  <p className="mt-1 text-xs leading-5 text-slate-500">
-                    RUC: {viewModel.company.ruc}
-                  </p>
+
+                <div className="flex items-start gap-3">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#EAF2FF] text-[#2563EB] shadow-inner">
+                    <Truck className="h-5 w-5" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm leading-5 font-semibold break-words text-slate-950">
+                      {viewModel.company.business_name}
+                    </p>
+                    <p className="mt-1 text-xs leading-5 text-slate-500">
+                      RUC: {viewModel.company.ruc}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="mt-4 flex items-center justify-between rounded-2xl border border-slate-200/80 bg-white/90 px-3 py-2">
+                  <div>
+                    <p className="text-[10px] font-medium text-slate-400 uppercase">
+                      Estado SUNAT
+                    </p>
+                    <p className="text-xs font-semibold text-slate-700">
+                      Datos sincronizados
+                    </p>
+                  </div>
                 </div>
               </div>
-
-              <button className="mt-3 inline-flex w-auto items-center justify-center rounded-lg border border-slate-200 bg-white px-3 py-1 text-sm font-semibold text-slate-700">
-                Ver SUNAT
-              </button>
             </div>
           </div>
         </aside>
@@ -162,7 +174,7 @@ export default function DashboardShell({
                 </div>
 
                 <div className="flex w-full max-w-full min-w-0 flex-col gap-2 sm:gap-3 lg:w-auto lg:min-w-0 lg:flex-row lg:flex-nowrap lg:items-center">
-                  <div className="relative min-w-0 w-full lg:w-[280px] lg:flex-none">
+                  <div className="relative w-full min-w-0 lg:w-[280px] lg:flex-none">
                     <label className="relative block">
                       <Search className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate-400" />
                       <input
@@ -210,13 +222,13 @@ export default function DashboardShell({
                   </div>
 
                   <div className="flex w-full max-w-full min-w-0 flex-col gap-2 lg:ml-auto lg:w-auto lg:flex-row lg:flex-nowrap lg:items-center">
-                    <div className="grid w-full min-w-0 max-w-full grid-cols-[auto_minmax(0,1fr)] items-center gap-2 lg:w-auto lg:max-w-none">
+                    <div className="grid w-full max-w-full min-w-0 grid-cols-[auto_minmax(0,1fr)] items-center gap-2 lg:w-auto lg:max-w-none">
                       <button className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:border-slate-300 hover:text-slate-700">
                         <Bell className="h-4 w-4" />
                         <span className="absolute top-2 right-2 h-2.5 w-2.5 rounded-full bg-[#FF4D6D]" />
                       </button>
 
-                      <div className="flex min-w-0 w-full max-w-full items-center justify-between rounded-xl border border-slate-200 bg-white px-2 py-1.5 lg:min-w-[170px] lg:flex-none">
+                      <div className="flex w-full max-w-full min-w-0 items-center justify-between rounded-xl border border-slate-200 bg-white px-2 py-1.5 lg:min-w-[170px] lg:flex-none">
                         <div className="flex min-w-0 items-center gap-2.5">
                           <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#34548C] text-xs font-semibold text-white">
                             {userInitials || "US"}
@@ -234,7 +246,7 @@ export default function DashboardShell({
                       </div>
                     </div>
 
-                    <DashboardLogoutButton className="w-full min-w-0 max-w-full px-2 text-xs lg:w-auto lg:flex-none lg:px-3 lg:text-sm" />
+                    <DashboardLogoutButton className="w-full max-w-full min-w-0 px-2 text-xs lg:w-auto lg:flex-none lg:px-3 lg:text-sm" />
                   </div>
                 </div>
               </div>

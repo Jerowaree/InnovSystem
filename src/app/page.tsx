@@ -12,13 +12,13 @@ export default function Home() {
   return (
     <div className="flex min-h-screen flex-col overflow-x-hidden bg-[#fcfdff] text-slate-950">
       <Header />
-      <main className="flex-1 pb-24">
+      <main className="flex-1 pb-4">
         <div className="mx-auto max-w-7xl px-4 pt-8 sm:px-6 lg:px-8">
           <Hero />
         </div>
-        
+
         <TrustSection />
-        
+
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <ChallengesSection />
         </div>
@@ -35,5 +35,3 @@ export default function Home() {
     </div>
   );
 }
-
-

@@ -1,71 +1,39 @@
-import { Globe, RefreshCw, Zap, Compass, Navigation, Shield } from "lucide-react";
+import Image from "next/image";
+
+const logos = [
+  { src: "/logo1.png", alt: "Logo de Transandes" },
+  { src: "/logo2.png", alt: "Logo de Cargarperú" },
+  { src: "/logo3.png", alt: "Logo de Vía Express" },
+  { src: "/logo4.png", alt: "Logo de Rutas del Sur" },
+  { src: "/logo5.png", alt: "Logo de Logimovil" },
+  { src: "/logo6.png", alt: "Logo de Pacífico Cargo" },
+];
 
 export default function TrustSection() {
   return (
-    <section className="w-full bg-[#f4f7fc] border-y border-slate-200/50 py-10 my-12">
+    <section className="my-12 w-full border-y border-slate-200/50 bg-[#f4f7fc] py-10">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <p className="text-center text-xs font-semibold tracking-[0.2em] text-slate-500 uppercase">
           Empresas de transporte que confían en nosotros
         </p>
-        
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-x-12 gap-y-8 md:gap-x-16 lg:gap-x-20">
-          
-          {/* Logo 1: Transandes */}
-          <div className="flex items-center gap-2 text-slate-500 hover:text-slate-700 transition">
-            <Globe className="h-6 w-6 stroke-[1.8]" />
-            <div className="leading-none text-left">
-              <span className="block text-sm font-bold tracking-tight text-slate-700 uppercase">Transandes</span>
-              <span className="text-[10px] tracking-wider text-slate-400">LOGÍSTICA</span>
-            </div>
-          </div>
 
-          {/* Logo 2: Cargarperú */}
-          <div className="flex items-center gap-2 text-slate-500 hover:text-slate-700 transition">
-            <RefreshCw className="h-6 w-6 stroke-[1.8]" />
-            <div className="leading-none text-left">
-              <span className="block text-sm font-bold tracking-tight text-slate-700 uppercase">Cargarperú</span>
-              <span className="text-[10px] tracking-wider text-slate-400">TRANSPORTE</span>
+        <div className="mt-8 grid grid-cols-2 items-center justify-items-center gap-x-8 gap-y-8 md:grid-cols-3 lg:grid-cols-6 lg:gap-x-10">
+          {logos.map((logo) => (
+            <div
+              key={logo.src}
+              className="relative flex h-24 w-full max-w-[220px] items-center justify-center grayscale transition hover:grayscale-0 sm:h-24 sm:max-w-[230px] lg:h-28 lg:max-w-[270px]"
+            >
+              <Image
+                src={logo.src}
+                alt={logo.alt}
+                fill
+                sizes="(min-width: 1024px) 180px, (min-width: 768px) 160px, 40vw"
+                className="object-contain"
+              />
             </div>
-          </div>
-
-          {/* Logo 3: Vía Express */}
-          <div className="flex items-center gap-2 text-slate-500 hover:text-slate-700 transition">
-            <Zap className="h-6 w-6 stroke-[1.8]" />
-            <div className="leading-none text-left">
-              <span className="block text-sm font-bold tracking-widest text-slate-750 uppercase">Vía Express</span>
-            </div>
-          </div>
-
-          {/* Logo 4: Rutas del Sur */}
-          <div className="flex items-center gap-2 text-slate-500 hover:text-slate-700 transition">
-            <Compass className="h-6 w-6 stroke-[1.8]" />
-            <div className="leading-none text-left">
-              <span className="block text-sm font-bold tracking-tight text-slate-700 uppercase">Rutas del Sur</span>
-              <span className="text-[10px] tracking-wider text-slate-400">SOLUCIONES</span>
-            </div>
-          </div>
-
-          {/* Logo 5: Logimovil */}
-          <div className="flex items-center gap-2 text-slate-500 hover:text-slate-700 transition">
-            <Navigation className="h-6 w-6 stroke-[1.8]" />
-            <div className="leading-none text-left">
-              <span className="block text-sm font-bold tracking-tight text-slate-700 uppercase">Logimovil</span>
-              <span className="text-[10px] tracking-wider text-slate-400">SOLUCIONES</span>
-            </div>
-          </div>
-
-          {/* Logo 6: Pacífico Cargo */}
-          <div className="flex items-center gap-2 text-slate-500 hover:text-slate-700 transition">
-            <Shield className="h-6 w-6 stroke-[1.8]" />
-            <div className="leading-none text-left">
-              <span className="block text-sm font-bold tracking-tight text-slate-700 uppercase">Pacífico Cargo</span>
-              <span className="text-[10px] tracking-wider text-slate-400">TRANSPORTE</span>
-            </div>
-          </div>
-
+          ))}
         </div>
       </div>
     </section>
   );
 }
-
