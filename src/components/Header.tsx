@@ -19,19 +19,29 @@ export default function Header() {
 
         <nav className="hidden items-center gap-8 md:flex">
           {navItems.map((item) => (
-            <a key={item} href={`#${item.toLowerCase()}`} className="inline-flex items-center leading-none text-sm font-medium text-slate-700 transition hover:text-slate-950">
+            <a
+              key={item}
+              href={`#${item.toLowerCase()}`}
+              className="inline-flex items-center text-sm leading-none font-medium text-slate-700 transition hover:text-slate-950"
+            >
               {item}
             </a>
           ))}
         </nav>
 
         <div className="hidden items-center gap-3 md:flex">
-            <Link href="/login" className="rounded-2xl border border-slate-300 bg-white px-5 py-3 text-sm font-medium text-slate-700 transition hover:border-slate-400 hover:bg-slate-50">
-              Iniciar sesión
-            </Link>
-            <Link href="/register" className="button-primary inline-flex min-w-[160px] items-center justify-center rounded-2xl px-5 py-3 text-sm font-semibold transition">
-              Comenzar ahora
-            </Link>
+          <Link
+            href="/login"
+            className="rounded-2xl border border-slate-300 bg-white px-5 py-3 text-sm font-medium text-slate-700 transition hover:border-slate-400 hover:bg-slate-50"
+          >
+            Iniciar sesión
+          </Link>
+          <Link
+            href="/register"
+            className="button-primary inline-flex min-w-[160px] items-center justify-center rounded-2xl px-5 py-3 text-sm font-semibold transition"
+          >
+            Comenzar ahora
+          </Link>
         </div>
 
         <button
@@ -48,17 +58,30 @@ export default function Header() {
         <div className="border-t border-slate-200 bg-white/95 md:hidden">
           <div className="flex flex-col gap-4 px-6 py-4">
             {navItems.map((item) => (
-              <a key={item} href={`#${item.toLowerCase()}`} className="text-base font-medium text-slate-700 transition hover:text-slate-950">
+              <a
+                key={item}
+                href={`#${item.toLowerCase()}`}
+                className="text-base font-medium text-slate-700 transition hover:text-slate-950"
+              >
                 {item}
               </a>
             ))}
-            <a href="#" className="rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-medium text-slate-700 transition hover:border-slate-400 hover:bg-slate-50">
+            <a
+              href="#"
+              className="rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-medium text-slate-700 transition hover:border-slate-400 hover:bg-slate-50"
+            >
               Recursos
             </a>
-            <Link className="rounded-2xl border border-slate-300 bg-white px-5 py-3 text-sm font-medium text-slate-700 transition hover:border-slate-400 hover:bg-slate-50" href="/login">
+            <Link
+              className="rounded-2xl border border-slate-300 bg-white px-5 py-3 text-sm font-medium text-slate-700 transition hover:border-slate-400 hover:bg-slate-50"
+              href="/login"
+            >
               Iniciar sesión
             </Link>
-            <Link className="button-primary inline-flex min-w-[160px] items-center justify-center rounded-2xl px-5 py-3 text-sm font-semibold transition" href="/register">
+            <Link
+              className="button-primary inline-flex min-w-[160px] items-center justify-center rounded-2xl px-5 py-3 text-sm font-semibold transition"
+              href="/register"
+            >
               Comenzar ahora
             </Link>
           </div>

@@ -4,7 +4,8 @@ import { CheckCircle2, Circle, DollarSign, Truck } from "lucide-react";
 const challenges = [
   {
     title: "Falta de visibilidad en tiempo real",
-    description: "No sabes dónde están tus unidades ni el estado de tus viajes.",
+    description:
+      "No sabes dónde están tus unidades ni el estado de tus viajes.",
   },
   {
     title: "Costos fuera de control",
@@ -12,7 +13,8 @@ const challenges = [
   },
   {
     title: "Documentación y cumplimiento",
-    description: "Riesgo de multas por vencimientos y documentos no gestionados.",
+    description:
+      "Riesgo de multas por vencimientos y documentos no gestionados.",
   },
   {
     title: "Reportes manuales y lentos",
@@ -31,24 +33,31 @@ export default function ChallengesSection() {
         </div>
         <div className="space-y-4">
           {challenges.map((challenge) => (
-            <div key={challenge.title} className="flex gap-4 rounded-[2rem] bg-white p-5 shadow-soft">
+            <div
+              key={challenge.title}
+              className="shadow-soft flex gap-4 rounded-[2rem] bg-white p-5"
+            >
               <span className="mt-1 inline-flex h-12 w-12 items-center justify-center rounded-3xl bg-blue-100 text-blue-700">
                 <CheckCircle2 className="h-6 w-6" />
               </span>
               <div>
-                <p className="text-base font-semibold text-slate-950">{challenge.title}</p>
-                <p className="mt-1 text-sm text-slate-500">{challenge.description}</p>
+                <p className="text-base font-semibold text-slate-950">
+                  {challenge.title}
+                </p>
+                <p className="mt-1 text-sm text-slate-500">
+                  {challenge.description}
+                </p>
               </div>
             </div>
           ))}
         </div>
       </div>
 
-      <div className="relative rounded-[2rem] bg-white p-6 shadow-soft sm:p-8">
-        <div className="absolute left-6 top-6 inline-flex h-12 w-12 items-center justify-center rounded-3xl bg-slate-100 text-slate-700">
+      <div className="shadow-soft relative rounded-[2rem] bg-white p-6 sm:p-8">
+        <div className="absolute top-6 left-6 inline-flex h-12 w-12 items-center justify-center rounded-3xl bg-slate-100 text-slate-700">
           <Truck className="h-6 w-6" />
         </div>
-        <div className="absolute right-6 top-10 hidden h-16 w-16 items-center justify-center rounded-3xl bg-blue-50 text-blue-700 sm:inline-flex">
+        <div className="absolute top-10 right-6 hidden h-16 w-16 items-center justify-center rounded-3xl bg-blue-50 text-blue-700 sm:inline-flex">
           <Circle className="h-6 w-6" />
         </div>
         <div className="absolute right-6 bottom-10 hidden h-16 w-16 items-center justify-center rounded-3xl bg-blue-50 text-blue-700 sm:inline-flex">

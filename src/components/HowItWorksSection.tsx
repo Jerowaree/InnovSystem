@@ -33,7 +33,9 @@ export default function HowItWorksSection() {
     <section className="mt-16">
       <div className="mx-auto max-w-7xl px-6">
         <div className="text-center">
-          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-slate-500">¿Cómo funciona InnovSystem?</p>
+          <p className="text-sm font-semibold tracking-[0.24em] text-slate-500 uppercase">
+            ¿Cómo funciona InnovSystem?
+          </p>
         </div>
 
         <div className="mt-8 flex items-start justify-center gap-6 overflow-x-auto py-6">
@@ -41,16 +43,22 @@ export default function HowItWorksSection() {
             <div key={step.title} className="flex items-start gap-6">
               <div className="flex flex-col items-center">
                 <div className="relative">
-                  <div className="h-20 w-20 rounded-full bg-white flex items-center justify-center shadow-sm">
+                  <div className="flex h-20 w-20 items-center justify-center rounded-full bg-white shadow-sm">
                     <div className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-blue-50">
                       {step.icon}
                     </div>
                   </div>
-                  <div className="absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full bg-blue-600 text-xs font-semibold text-white">{idx + 1}</div>
+                  <div className="absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full bg-blue-600 text-xs font-semibold text-white">
+                    {idx + 1}
+                  </div>
                 </div>
                 <div className="mt-4 w-44 text-center">
-                  <p className="text-sm font-semibold text-slate-950">{step.title}</p>
-                  <p className="mt-1 text-xs text-slate-500">{step.description}</p>
+                  <p className="text-sm font-semibold text-slate-950">
+                    {step.title}
+                  </p>
+                  <p className="mt-1 text-xs text-slate-500">
+                    {step.description}
+                  </p>
                 </div>
               </div>
 

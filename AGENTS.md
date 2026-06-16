@@ -8,12 +8,12 @@ InnovSystem Transporte is an academic SaaS web platform designed for transportat
 
 The purpose of the platform is to provide a centralized dashboard where companies can:
 
-* Consult company information.
-* Visualize financial and operational movements.
-* Analyze data through interactive charts.
-* Generate Excel reports.
-* Consume information from SUNAT services.
-* Monitor key business indicators.
+- Consult company information.
+- Visualize financial and operational movements.
+- Analyze data through interactive charts.
+- Generate Excel reports.
+- Consume information from SUNAT services.
+- Monitor key business indicators.
 
 This project is intentionally limited in scope to maintain feasibility within an academic environment.
 
@@ -25,18 +25,18 @@ InnovSystem should feel like a modern SaaS product rather than a traditional aca
 
 The user experience should resemble products such as:
 
-* Stripe
-* Linear
-* Notion
-* Vercel
+- Stripe
+- Linear
+- Notion
+- Vercel
 
 The application must prioritize:
 
-* Simplicity
-* Performance
-* Clarity
-* Data visualization
-* Professional design
+- Simplicity
+- Performance
+- Clarity
+- Data visualization
+- Professional design
 
 ---
 
@@ -44,26 +44,26 @@ The application must prioritize:
 
 ## Frontend
 
-* Next.js 15 App Router
-* React 19
-* TypeScript
-* Tailwind CSS
-* shadcn/ui
-* Lucide React
+- Next.js 15 App Router
+- React 19
+- TypeScript
+- Tailwind CSS
+- shadcn/ui
+- Lucide React
 
 ## Backend
 
-* Supabase Auth
-* Supabase PostgreSQL
-* Supabase Storage
+- Supabase Auth
+- Supabase PostgreSQL
+- Supabase Storage
 
 ## Data Visualization
 
-* Recharts
+- Recharts
 
 ## Reports
 
-* ExcelJS
+- ExcelJS
 
 ---
 
@@ -75,61 +75,61 @@ The platform ONLY contains the following modules.
 
 Sections:
 
-* Navbar
-* Hero
-* Trust Section
-* Problem Section
-* Solution Section
-* How It Works
-* Dashboard Showcase
-* Benefits
-* Reports
-* SUNAT Integration
-* CTA
-* Footer
+- Navbar
+- Hero
+- Trust Section
+- Problem Section
+- Solution Section
+- How It Works
+- Dashboard Showcase
+- Benefits
+- Reports
+- SUNAT Integration
+- CTA
+- Footer
 
 ## Authentication
 
 Pages:
 
-* Login
-* Register
+- Login
+- Register
 
 ## Dashboard
 
 Features:
 
-* KPI cards
-* Charts
-* Movements table
-* Filters
-* Report generation
-* SUNAT information
+- KPI cards
+- Charts
+- Movements table
+- Filters
+- Report generation
+- SUNAT information
 
 ## Reports
 
 Generate:
 
-* Sales Excel Report
-* Purchases Excel Report
-* Financial Summary Excel Report
+- Sales Excel Report
+- Purchases Excel Report
+- Financial Summary Excel Report
 
 ## SUNAT
 
 Allowed functionality:
 
-* RUC lookup
-* Company information lookup
+- RUC lookup
+- Company information lookup
 
 Do NOT implement:
 
-* Electronic invoicing
-* PLE
-* SIRE
-* OSE
-* XML signing
-* Certificates
-* Tax declaration systems
+- Electronic invoicing
+- PLE
+- SIRE
+- OSE
+- XML signing
+- Certificates
+- Tax declaration systems
 
 These are outside project scope.
 
@@ -143,17 +143,17 @@ The interface must look modern, minimal and enterprise-grade.
 
 Avoid:
 
-* Heavy gradients
-* Excessive shadows
-* Colorful dashboards
-* Academic-style layouts
+- Heavy gradients
+- Excessive shadows
+- Colorful dashboards
+- Academic-style layouts
 
 Prefer:
 
-* Clean spacing
-* Large typography
-* Neutral backgrounds
-* Clear hierarchy
+- Clean spacing
+- Large typography
+- Neutral backgrounds
+- Clear hierarchy
 
 ---
 
@@ -197,10 +197,10 @@ Inter
 
 Weights:
 
-* 400
-* 500
-* 600
-* 700
+- 400
+- 500
+- 600
+- 700
 
 ---
 
@@ -212,17 +212,17 @@ The hero section must NOT occupy excessive vertical space.
 
 Requirements:
 
-* Full desktop viewport width
-* Compact vertical spacing
-* Dashboard preview visible above the fold
-* Primary CTA visible immediately
-* No giant illustrations pushing content downward
+- Full desktop viewport width
+- Compact vertical spacing
+- Dashboard preview visible above the fold
+- Primary CTA visible immediately
+- No giant illustrations pushing content downward
 
 The hero must feel similar to:
 
-* Stripe
-* Vercel
-* Ramp
+- Stripe
+- Vercel
+- Ramp
 
 ---
 
@@ -244,10 +244,10 @@ Priority order:
 
 Display:
 
-* Total Sales
-* Total Purchases
-* Estimated Profit
-* IGV
+- Total Sales
+- Total Purchases
+- Estimated Profit
+- IGV
 
 ---
 
@@ -311,14 +311,14 @@ Always use strict typing.
 
 Avoid:
 
-* any
-* implicit any
+- any
+- implicit any
 
 Prefer:
 
-* interfaces
-* types
-* reusable DTOs
+- interfaces
+- types
+- reusable DTOs
 
 ---
 
@@ -338,9 +338,9 @@ Extract reusable logic into hooks.
 
 Prefer:
 
-* Server Components
-* Server Actions
-* Route Handlers
+- Server Components
+- Server Actions
+- Route Handlers
 
 Avoid unnecessary client-side fetching.
 
@@ -352,36 +352,36 @@ Tables:
 
 ## companies
 
-* id
-* ruc
-* business_name
-* email
-* created_at
+- id
+- ruc
+- business_name
+- email
+- created_at
 
 ## users
 
-* id
-* company_id
-* email
-* created_at
+- id
+- company_id
+- email
+- created_at
 
 ## movements
 
-* id
-* company_id
-* movement_type
-* document_type
-* description
-* amount
-* date
+- id
+- company_id
+- movement_type
+- document_type
+- description
+- amount
+- date
 
 ## reports
 
-* id
-* company_id
-* report_type
-* file_url
-* generated_at
+- id
+- company_id
+- report_type
+- file_url
+- generated_at
 
 ---
 
@@ -389,15 +389,15 @@ Tables:
 
 Use:
 
-* Supabase Auth
-* Protected routes
-* Server-side validation
+- Supabase Auth
+- Protected routes
+- Server-side validation
 
 Never:
 
-* Trust client-side validation only
-* Expose service role keys
-* Store secrets in frontend code
+- Trust client-side validation only
+- Expose service role keys
+- Store secrets in frontend code
 
 ---
 
@@ -414,10 +414,10 @@ Before generating code:
 
 Always prioritize:
 
-* Readability
-* Maintainability
-* Scalability
-* Performance
+- Readability
+- Maintainability
+- Scalability
+- Performance
 
 Over clever code.
 
@@ -427,10 +427,10 @@ Over clever code.
 
 When implementing features:
 
-* Explain architectural decisions.
-* Explain tradeoffs.
-* Generate production-quality code.
-* Follow existing project structure.
-* Avoid overengineering.
+- Explain architectural decisions.
+- Explain tradeoffs.
+- Generate production-quality code.
+- Follow existing project structure.
+- Avoid overengineering.
 
 Act as a Senior Software Engineer and Technical Lead at all times.

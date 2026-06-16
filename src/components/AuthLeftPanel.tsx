@@ -21,18 +21,34 @@ export default function AuthLeftPanel({
   return (
     <div className="flex h-full w-full flex-col justify-between bg-gradient-to-b from-blue-500 to-blue-900 px-10 py-10 text-white">
       <div className="space-y-8">
-        <Link href="/" className="inline-flex items-center gap-3 text-white hover:text-blue-100">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-3 text-white hover:text-blue-100"
+        >
           <Logo variant="light" size="lg" />
         </Link>
 
         <div className="space-y-4">
-          <h1 className="text-4xl font-semibold leading-tight tracking-[-0.03em] text-white sm:text-5xl">{title}</h1>
-          {subtitle ? <p className="max-w-lg text-sm leading-7 text-blue-100/90">{subtitle}</p> : null}
+          <h1 className="text-4xl leading-tight font-semibold tracking-[-0.03em] text-white sm:text-5xl">
+            {title}
+          </h1>
+          {subtitle ? (
+            <p className="max-w-lg text-sm leading-7 text-blue-100/90">
+              {subtitle}
+            </p>
+          ) : null}
         </div>
 
         {imageSrc ? (
-          <div className="mx-auto w-full max-w-[360px]">
-            <Image src={imageSrc} alt="Ilustración" width={360} height={260} className="mx-auto h-auto w-full object-contain" style={{ width: 'auto', height: 'auto' }} priority />
+          <div className="relative mx-auto aspect-[18/13] w-full max-w-[360px]">
+            <Image
+              src={imageSrc}
+              alt="Ilustración"
+              fill
+              sizes="(min-width: 768px) 360px, 80vw"
+              className="object-contain"
+              priority
+            />
           </div>
         ) : null}
       </div>
@@ -49,7 +65,9 @@ export default function AuthLeftPanel({
           ))}
         </div>
 
-        <div className="text-sm text-blue-100/70">© {year} InnovSystem. Todos los derechos reservados.</div>
+        <div className="text-sm text-blue-100/70">
+          © {year} InnovSystem. Todos los derechos reservados.
+        </div>
       </div>
     </div>
   );
