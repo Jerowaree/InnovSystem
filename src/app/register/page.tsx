@@ -237,7 +237,7 @@ export default function RegisterPage() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full rounded-md bg-slate-950 px-4 py-3 text-sm font-semibold text-white disabled:opacity-60"
+                className="w-full rounded-md bg-slate-950 px-4 py-3 text-sm font-semibold text-white transition duration-200 hover:bg-blue-700 disabled:opacity-60"
               >
                 Crear cuenta
               </button>

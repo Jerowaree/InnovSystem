@@ -149,7 +149,7 @@ export default function LoginPage() {
               <button
                 disabled={isSubmitting}
                 type="submit"
-                className="w-full rounded-md bg-slate-950 px-4 py-3 text-sm font-semibold text-white disabled:opacity-60"
+                className="w-full rounded-md bg-slate-950 px-4 py-3 text-sm font-semibold text-white transition duration-200 hover:bg-blue-700 disabled:opacity-60"
               >
                 Iniciar sesión
               </button>
