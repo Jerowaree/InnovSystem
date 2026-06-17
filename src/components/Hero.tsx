@@ -4,7 +4,7 @@ import { Clock3, Cloud, ShieldCheck, Play } from "lucide-react";
 
 export default function Hero() {
   return (
-    <section className="relative max-w-full overflow-hidden pt-2 pb-10 lg:grid lg:grid-cols-12 lg:items-center lg:gap-16 lg:pt-18 lg:pb-12">
+    <section className="relative max-w-full overflow-hidden pt-2 pb-16 lg:grid lg:grid-cols-12 lg:items-center lg:gap-16 lg:pt-18 lg:pb-20">
       {/* Left: Text and CTA */}
       <div className="relative z-10 min-w-0 space-y-6 lg:col-span-5 lg:-translate-y-4">
         <h1 className="text-[2.25rem] leading-[1.15] font-bold tracking-[-0.04em] text-slate-900 sm:text-5xl lg:text-[3.5rem]">
@@ -65,6 +65,22 @@ export default function Hero() {
             priority
           />
         </div>
+      </div>
+
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute bottom-0 left-1/2 w-screen -translate-x-1/2"
+      >
+        <svg
+          viewBox="0 0 1440 180"
+          preserveAspectRatio="none"
+          className="block h-20 w-full sm:h-24 lg:h-28"
+        >
+          <path
+            d="M0 180V136C180 88 356 64 547 80C681 91 767 145 914 151C1098 159 1240 106 1440 54V180H0Z"
+            fill="#2563EB"
+          />
+        </svg>
       </div>
     </section>
   );
