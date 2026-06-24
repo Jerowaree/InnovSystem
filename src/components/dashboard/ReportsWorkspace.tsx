@@ -1,337 +1,340 @@
 "use client";
 
+import Image from "next/image";
+import { TrendingDown, TrendingUp } from "lucide-react";
 import { useMemo, useState } from "react";
-import {
-  BarChart3,
-  Download,
-  FileSpreadsheet,
-  Plus,
-  ShoppingCart,
-  Wallet,
-} from "lucide-react";
 import DashboardShell from "@/components/dashboard/DashboardShell";
-import { applyDashboardMockData } from "@/features/dashboard/lib/dashboardMockData";
+import { LazySireSalesReportsPanel } from "@/components/dashboard/reports/LazySireSalesReportsPanel";
 import {
   buildDashboardPeriods,
+  buildDashboardPeriodsFromSire,
   filterMovementsByPeriod,
   filterReportsByPeriod,
+  mergeDashboardPeriods,
+  type DashboardPeriod,
 } from "@/features/dashboard/lib/dashboardPeriods";
 import { buildDashboardViewModel } from "@/features/dashboard/lib/dashboardViewModel";
 import type { DashboardData } from "@/services/dashboardServiceServer";
+import type { SireDashboardContext } from "@/types/sire";
+import { exportWorkspaceReport } from "@/components/dashboard/reports/reportsWorkspaceExport";
 
 interface ReportsWorkspaceProps {
   data: DashboardData;
+  sireContext: SireDashboardContext;
 }
 
-export default function ReportsWorkspace({ data }: ReportsWorkspaceProps) {
-  const previewData = useMemo(() => applyDashboardMockData(data), [data]);
+export default function ReportsWorkspace({
+  data,
+  sireContext,
+}: ReportsWorkspaceProps) {
+  const movementPeriods = useMemo(
+    () => buildDashboardPeriods(data.movements),
+    [data.movements]
+  );
+  const combinedSirePeriodCodes = useMemo(
+    () =>
+      Array.from(
+        new Set([...data.source.sirePeriodCodes, ...sireContext.periodCodes])
+      ),
+    [data.source.sirePeriodCodes, sireContext.periodCodes]
+  );
+  const sirePeriods = useMemo(
+    () => buildDashboardPeriodsFromSire(combinedSirePeriodCodes),
+    [combinedSirePeriodCodes]
+  );
   const periods = useMemo(
-    () => buildDashboardPeriods(previewData.movements),
-    [previewData.movements]
+    () => mergeDashboardPeriods(movementPeriods, sirePeriods),
+    [movementPeriods, sirePeriods]
   );
-  const [selectedPeriodIndex] = useState(Math.max(0, periods.length - 1));
-  const selectedPeriod = periods[selectedPeriodIndex];
-  const filteredMovements = filterMovementsByPeriod(
-    previewData.movements,
-    selectedPeriod
+  const [selectedPeriodIndex, setSelectedPeriodIndex] = useState(() =>
+    Math.max(0, periods.length - 1)
   );
-  const filteredReports = filterReportsByPeriod(
-    previewData.reports,
-    selectedPeriod
-  );
+  const safeSelectedPeriodIndex =
+    periods.length === 0
+      ? 0
+      : Math.min(selectedPeriodIndex, periods.length - 1);
+  const selectedPeriod =
+    periods[safeSelectedPeriodIndex] ?? periods[Math.max(0, periods.length - 1)];
+  const filteredMovements = filterMovementsByPeriod(data.movements, selectedPeriod);
+  const filteredReports = filterReportsByPeriod(data.reports, selectedPeriod);
   const viewModel = buildDashboardViewModel({
-    company: previewData.company,
-    profile: previewData.profile,
+    company: data.company,
+    profile: data.profile,
     movements: filteredMovements,
     reports: filteredReports,
   });
+  const totalSales = filteredMovements.reduce((total, movement) => {
+    const value = movement.movement_type.trim().toLowerCase();
+    return total + (value.includes("venta") || value.includes("ingreso") ? movement.amount : 0);
+  }, 0);
+  const totalExpenses = filteredMovements.reduce((total, movement) => {
+    const value = movement.movement_type.trim().toLowerCase();
+    return total + (value.includes("compra") || value.includes("gasto") || value.includes("egreso") ? movement.amount : 0);
+  }, 0);
+  const totalTaxes = filteredMovements.reduce(
+    (total, movement) => total + (movement.tax_amount ?? 0),
+    0
+  );
+  const netResult = totalSales - totalExpenses - totalTaxes;
+  const isProfitable = netResult >= 0;
+  const semaphoreState =
+    netResult > 0 ? "green" : netResult < 0 ? "red" : "yellow";
+  const formattedNetResult = `S/ ${Math.abs(netResult).toLocaleString("en-US", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  })}`;
 
-  const downloadEmptyExcel = async (reportTitle: string) => {
-    const ExcelJS = await import("exceljs");
-    const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet(reportTitle);
-
-    worksheet.columns = [
-      { header: "Campo", key: "field", width: 24 },
-      { header: "Valor", key: "value", width: 32 },
-    ];
-
-    worksheet.addRow({ field: "Reporte", value: reportTitle });
-    worksheet.addRow({ field: "Periodo", value: selectedPeriod.label });
-    worksheet.addRow({ field: "Estado", value: "Plantilla vacía" });
-
-    const buffer = await workbook.xlsx.writeBuffer();
-    const blob = new Blob([buffer], {
-      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  const exportAccountBalance = async () => {
+    await exportWorkspaceReport({
+      type: "balance",
+      selectedPeriod: selectedPeriod as DashboardPeriod,
+      companyName: data.company.business_name,
+      companyRuc: data.company.ruc,
+      movements: filteredMovements,
+      reports: filteredReports,
+      totalSalesLabel: viewModel.kpis[0]?.value ?? "S/ 0",
+      totalPurchasesLabel: `S/ ${totalExpenses.toLocaleString("en-US", {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+      })}`,
+      estimatedProfitLabel: `${isProfitable ? "Ganancia" : "Perdida"} ${formattedNetResult}`,
+      igvLabel: `S/ ${totalTaxes.toLocaleString("en-US", {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+      })}`,
+      totalSalesAmount: totalSales,
+      totalPurchasesAmount: totalExpenses,
+      estimatedProfitAmount: netResult,
+      igvAmount: totalTaxes,
     });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `${reportTitle.toLowerCase().replace(/\s+/g, "-")}.xlsx`;
-    link.click();
-    URL.revokeObjectURL(url);
   };
-
-  const reportCards = [
-    {
-      title: "Reporte de Ventas",
-      description:
-        "Exporta el detalle de todas las ventas e ingresos del período seleccionado.",
-      icon: BarChart3,
-      tone: "bg-[#EAF7EF] text-[#16A34A]",
-      actionTone: "bg-[#EEF9F1] text-[#16A34A]",
-      metricLabel: "Total Ventas",
-      metricValue: viewModel.kpis[0]?.value ?? "S/ 0",
-      secondaryLabel: "Registros",
-      secondaryValue: `${
-        filteredMovements.filter((item) =>
-          item.movement_type.toLowerCase().includes("venta")
-        ).length
-      }`,
-    },
-    {
-      title: "Reporte de Compras",
-      description:
-        "Exporta el detalle de todas las compras y egresos del período seleccionado.",
-      icon: ShoppingCart,
-      tone: "bg-[#EEF4FF] text-[#2F6BFF]",
-      actionTone: "bg-[#EEF4FF] text-[#2F6BFF]",
-      metricLabel: "Total Compras",
-      metricValue: viewModel.kpis[1]?.value ?? "S/ 0",
-      secondaryLabel: "Registros",
-      secondaryValue: `${
-        filteredMovements.filter((item) =>
-          item.movement_type.toLowerCase().match(/compra|gasto|egreso/)
-        ).length
-      }`,
-    },
-    {
-      title: "Balance Financiero",
-      description:
-        "Exporta el balance general con activos, pasivos y patrimonio del período.",
-      icon: Wallet,
-      tone: "bg-[#F4EDFF] text-[#7C3AED]",
-      actionTone: "bg-[#F4EDFF] text-[#7C3AED]",
-      metricLabel: "Resultado Neto",
-      metricValue: viewModel.kpis[2]?.value ?? "S/ 0",
-      secondaryLabel: "Registros",
-      secondaryValue: "-",
-    },
-  ];
-
-  const summaryItems = [
-    {
-      label: "Total Ventas",
-      description: "Ingresos en el período",
-      value: viewModel.kpis[0]?.value ?? "S/ 0",
-      tone: "text-[#16A34A] bg-[#EAF7EF]",
-    },
-    {
-      label: "Total Compras",
-      description: "Egresos en el período",
-      value: viewModel.kpis[1]?.value ?? "S/ 0",
-      tone: "text-[#DC2626] bg-[#FDECEC]",
-    },
-    {
-      label: "Gasto Operativo",
-      description: "Gastos administrativos",
-      value: "S/ 18,250.00",
-      tone: "text-[#2563EB] bg-[#EEF4FF]",
-    },
-    {
-      label: "Resultado Neto",
-      description: "Utilidad del período",
-      value: viewModel.kpis[2]?.value ?? "S/ 0",
-      tone: "text-[#7C3AED] bg-[#F4EDFF]",
-    },
-  ];
 
   return (
     <DashboardShell viewModel={viewModel}>
       <div className="space-y-5">
+        <LazySireSalesReportsPanel initialSireConfig={sireContext.config} />
+
         <section className="rounded-[20px] border border-white/80 bg-white px-5 py-5 shadow-[0_24px_48px_-42px_rgba(15,23,42,0.28)]">
-          <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_220px]">
-            <div className="grid gap-4 md:grid-cols-3">
-              <div>
-                <p className="mb-2 text-xs font-medium tracking-[0.14em] text-slate-400 uppercase">
-                  Período
-                </p>
-                <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700">
-                  {selectedPeriod.label}
-                </div>
-              </div>
-              <div>
-                <p className="mb-2 text-xs font-medium tracking-[0.14em] text-slate-400 uppercase">
-                  Tipo de reporte
-                </p>
-                <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700">
-                  Todos los reportes
-                </div>
-              </div>
-              <div>
-                <p className="mb-2 text-xs font-medium tracking-[0.14em] text-slate-400 uppercase">
-                  Estado
-                </p>
-                <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700">
-                  Todos
-                </div>
-              </div>
+          <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+            <div className="max-w-3xl">
+              <p className="text-sm font-semibold text-slate-950">
+                Balance general de cuenta
+              </p>
+              <p className="mt-2 text-sm leading-6 text-slate-600">
+                Revisa de forma directa si la empresa viene ganando o perdiendo
+                en el periodo seleccionado y exporta un Excel para sustentarlo.
+              </p>
             </div>
 
-            <div className="flex flex-col gap-2 xl:items-end">
-              <button
-                type="button"
-                onClick={() => downloadEmptyExcel("reporte-general")}
-                className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-[#2F6BFF] px-5 text-sm font-semibold text-white transition hover:bg-[#2558D9]"
-              >
-                <Plus className="h-4 w-4" />
-                Generar Reporte
-              </button>
-              <button className="inline-flex items-center justify-center gap-2 text-sm font-medium text-[#2F6BFF]">
-                Programar reportes
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={() => void exportAccountBalance()}
+              className="inline-flex h-11 items-center justify-center gap-3 rounded-xl border border-emerald-200 bg-emerald-50 px-5 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-100"
+            >
+              <Image
+                src="/excel.png"
+                alt="Excel"
+                width={18}
+                height={18}
+                className="h-[18px] w-[18px]"
+              />
+              Exportar balance general
+            </button>
           </div>
-        </section>
 
-        <section className="grid gap-4 xl:grid-cols-3">
-          {reportCards.map((card) => (
-            <article
-              key={card.title}
-              className="rounded-[18px] border border-white/80 bg-white px-5 py-5 shadow-[0_24px_48px_-42px_rgba(15,23,42,0.28)]"
+          <div className="mt-5 grid gap-4 lg:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)]">
+            <div className="rounded-2xl border border-slate-200 bg-slate-50/60 p-5">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p className="text-xs font-medium uppercase tracking-[0.14em] text-slate-400">
+                    Periodo analizado
+                  </p>
+                  <p className="mt-2 text-sm font-semibold text-slate-900">
+                    {selectedPeriod.label}
+                  </p>
+                  <p className="mt-1 text-xs text-slate-500">
+                    {selectedPeriod.sirePeriodCode
+                      ? `Codigo SUNAT ${selectedPeriod.sirePeriodCode}`
+                      : "Basado en movimientos disponibles del sistema"}
+                  </p>
+                </div>
+
+                <select
+                  value={selectedPeriod.key}
+                  onChange={(event) => {
+                    const nextIndex = periods.findIndex(
+                      (period) => period.key === event.target.value
+                    );
+
+                    if (nextIndex >= 0) {
+                      setSelectedPeriodIndex(nextIndex);
+                    }
+                  }}
+                  className="h-11 w-full rounded-xl border border-slate-200 bg-white px-4 text-sm font-medium text-slate-700 outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/10 sm:w-[280px]"
+                >
+                  {periods.map((period) => (
+                    <option key={period.key} value={period.key}>
+                      {period.sirePeriodCode
+                        ? `${period.sirePeriodCode} - ${period.label}`
+                        : period.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                <div className="rounded-2xl bg-white px-4 py-4">
+                  <p className="text-xs uppercase tracking-[0.14em] text-slate-400">
+                    Ingresos
+                  </p>
+                  <p className="mt-2 text-lg font-semibold text-slate-950">
+                    {viewModel.kpis[0]?.value ?? "S/ 0"}
+                  </p>
+                </div>
+                <div className="rounded-2xl bg-white px-4 py-4">
+                  <p className="text-xs uppercase tracking-[0.14em] text-slate-400">
+                    Egresos
+                  </p>
+                  <p className="mt-2 text-lg font-semibold text-slate-950">
+                    S/ {totalExpenses.toLocaleString("en-US")}
+                  </p>
+                </div>
+                <div className="rounded-2xl bg-white px-4 py-4">
+                  <p className="text-xs uppercase tracking-[0.14em] text-slate-400">
+                    Impuestos
+                  </p>
+                  <p className="mt-2 text-lg font-semibold text-slate-950">
+                    S/ {totalTaxes.toLocaleString("en-US")}
+                  </p>
+                </div>
+                <div className="rounded-2xl bg-white px-4 py-4">
+                  <p className="text-xs uppercase tracking-[0.14em] text-slate-400">
+                    Comprobantes
+                  </p>
+                  <p className="mt-2 text-lg font-semibold text-slate-950">
+                    {filteredMovements.length}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div
+              className={`rounded-2xl border px-5 py-5 ${
+                isProfitable
+                  ? "border-emerald-200 bg-emerald-50/80"
+                  : netResult < 0
+                    ? "border-rose-200 bg-rose-50/80"
+                    : "border-amber-200 bg-amber-50/80"
+              }`}
             >
               <div className="flex items-start gap-4">
                 <div
-                  className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${card.tone}`}
+                  className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${
+                    isProfitable
+                      ? "bg-white text-emerald-600"
+                      : netResult < 0
+                        ? "bg-white text-rose-600"
+                        : "bg-white text-amber-600"
+                  }`}
                 >
-                  <card.icon className="h-5 w-5" />
+                  {isProfitable ? (
+                    <TrendingUp className="h-5 w-5" />
+                  ) : netResult < 0 ? (
+                    <TrendingDown className="h-5 w-5" />
+                  ) : (
+                    <div className="h-3.5 w-3.5 rounded-full bg-amber-500" />
+                  )}
                 </div>
                 <div className="min-w-0">
-                  <h2 className="text-base font-semibold text-slate-950">
-                    {card.title}
-                  </h2>
-                  <p className="mt-2 text-sm leading-6 text-slate-600">
-                    {card.description}
-                  </p>
-                </div>
-              </div>
-
-              <div className="mt-5 grid grid-cols-2 gap-4 border-t border-slate-100 pt-4">
-                <div>
-                  <p className="text-xs tracking-[0.14em] text-slate-400 uppercase">
-                    {card.secondaryLabel}
-                  </p>
-                  <p className="mt-2 text-xl font-semibold text-slate-900">
-                    {card.secondaryValue}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-xs tracking-[0.14em] text-slate-400 uppercase">
-                    {card.metricLabel}
-                  </p>
-                  <p className="mt-2 text-xl font-semibold text-slate-900">
-                    {card.metricValue}
-                  </p>
-                </div>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => downloadEmptyExcel(card.title)}
-                className={`mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold ${card.actionTone}`}
-              >
-                <Download className="h-4 w-4" />
-                Descargar Excel
-              </button>
-            </article>
-          ))}
-        </section>
-
-        <section className="grid gap-5 xl:grid-cols-[minmax(0,1.7fr)_minmax(320px,0.85fr)]">
-          <article className="rounded-[18px] border border-white/80 bg-white px-5 py-5 shadow-[0_24px_48px_-42px_rgba(15,23,42,0.28)]">
-            <h2 className="text-lg font-semibold text-slate-950">
-              Historial de Reportes Generados
-            </h2>
-
-            <div className="mt-5 overflow-x-auto rounded-2xl border border-slate-100">
-              <div className="min-w-[760px]">
-                <div className="grid grid-cols-[1.1fr_1.4fr_0.9fr_0.8fr_1fr_0.8fr_0.7fr] gap-3 bg-slate-50 px-4 py-3 text-xs font-medium tracking-[0.14em] text-slate-400 uppercase">
-                  <span>Fecha</span>
-                  <span>Reporte</span>
-                  <span>Período</span>
-                  <span>Formato</span>
-                  <span>Generado por</span>
-                  <span>Estado</span>
-                  <span>Acción</span>
-                </div>
-
-                {viewModel.reports.map((report) => (
-                  <div
-                    key={report.id}
-                    className="grid grid-cols-[1.1fr_1.4fr_0.9fr_0.8fr_1fr_0.8fr_0.7fr] gap-3 border-t border-slate-100 px-4 py-4 text-sm text-slate-700"
-                  >
-                    <span>{report.generatedAt}</span>
-                    <span className="flex items-center gap-2 font-medium text-slate-900">
-                      <FileSpreadsheet className="h-4 w-4 text-[#16A34A]" />
-                      {report.title}
+                  <div className="mb-3 flex items-center gap-2">
+                    <span className="text-xs font-medium uppercase tracking-[0.14em] text-slate-500">
+                      Semaforo
                     </span>
-                    <span>{selectedPeriod.label}</span>
-                    <span>xlsx</span>
-                    <span>Administrador</span>
-                    <span className="inline-flex w-fit rounded-full bg-[#EAF7EF] px-2.5 py-1 text-xs font-semibold text-[#16A34A]">
-                      Completado
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => downloadEmptyExcel(report.title)}
-                      className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 text-slate-500 transition hover:border-slate-300 hover:text-slate-700"
-                    >
-                      <Download className="h-4 w-4" />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </article>
-
-          <article className="rounded-[18px] border border-white/80 bg-white px-5 py-5 shadow-[0_24px_48px_-42px_rgba(15,23,42,0.28)]">
-            <h2 className="text-lg font-semibold text-slate-950">
-              Resumen del Período
-            </h2>
-            <div className="mt-4 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700">
-              {selectedPeriod.label}
-            </div>
-
-            <div className="mt-4 space-y-4">
-              {summaryItems.map((item) => (
-                <div
-                  key={item.label}
-                  className="flex items-start gap-3 rounded-2xl border border-slate-100 bg-slate-50/70 px-4 py-4"
-                >
-                  <div
-                    className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl ${item.tone}`}
-                  >
-                    <BarChart3 className="h-4 w-4" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-semibold text-slate-900">
-                      {item.label}
-                    </p>
-                    <p className="mt-1 text-xs text-slate-500">
-                      {item.description}
-                    </p>
+                    <div className="flex items-center gap-2 rounded-full bg-white/80 px-3 py-1.5">
+                      <span
+                        className={`h-3 w-3 rounded-full ${
+                          semaphoreState === "green"
+                            ? "bg-emerald-500 ring-4 ring-emerald-100"
+                            : "bg-slate-200"
+                        }`}
+                      />
+                      <span
+                        className={`h-3 w-3 rounded-full ${
+                          semaphoreState === "yellow"
+                            ? "bg-amber-500 ring-4 ring-amber-100"
+                            : "bg-slate-200"
+                        }`}
+                      />
+                      <span
+                        className={`h-3 w-3 rounded-full ${
+                          semaphoreState === "red"
+                            ? "bg-rose-500 ring-4 ring-rose-100"
+                            : "bg-slate-200"
+                        }`}
+                      />
+                    </div>
                   </div>
                   <p className="text-sm font-semibold text-slate-900">
-                    {item.value}
+                    {netResult > 0
+                      ? "La empresa esta ganando en este periodo"
+                      : netResult < 0
+                        ? "La empresa esta perdiendo en este periodo"
+                        : "La empresa esta en equilibrio en este periodo"}
                   </p>
+                  <p
+                    className={`mt-3 text-2xl font-semibold ${
+                      netResult > 0
+                        ? "text-emerald-700"
+                        : netResult < 0
+                          ? "text-rose-700"
+                          : "text-amber-700"
+                    }`}
+                  >
+                    {netResult > 0 ? "+" : netResult < 0 ? "-" : ""}
+                    {formattedNetResult}
+                  </p>
+                  <p className="mt-3 text-sm leading-6 text-slate-600">
+                    Este resultado toma los ingresos del periodo y les descuenta
+                    egresos e impuestos visibles en tus movimientos actuales.
+                  </p>
+                  <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                    <div className="rounded-2xl bg-white/80 px-3 py-3">
+                      <p className="text-[11px] font-medium uppercase tracking-[0.12em] text-slate-400">
+                        Estado
+                      </p>
+                      <p className="mt-1 text-sm font-semibold text-slate-900">
+                        {netResult > 0
+                          ? "Favorable"
+                          : netResult < 0
+                            ? "En riesgo"
+                            : "Estable"}
+                      </p>
+                    </div>
+                    <div className="rounded-2xl bg-white/80 px-3 py-3">
+                      <p className="text-[11px] font-medium uppercase tracking-[0.12em] text-slate-400">
+                        Flujo neto
+                      </p>
+                      <p className="mt-1 text-sm font-semibold text-slate-900">
+                        {netResult > 0 ? "Positivo" : netResult < 0 ? "Negativo" : "Neutro"}
+                      </p>
+                    </div>
+                    <div className="rounded-2xl bg-white/80 px-3 py-3">
+                      <p className="text-[11px] font-medium uppercase tracking-[0.12em] text-slate-400">
+                        Decision sugerida
+                      </p>
+                      <p className="mt-1 text-sm font-semibold text-slate-900">
+                        {netResult > 0
+                          ? "Mantener ritmo"
+                          : netResult < 0
+                            ? "Revisar costos"
+                            : "Monitorear"}
+                      </p>
+                    </div>
+                  </div>
                 </div>
-              ))}
+              </div>
             </div>
-
-            <button className="mt-5 inline-flex w-full items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-[#2F6BFF]">
-              Ver análisis detallado
-            </button>
-          </article>
+          </div>
         </section>
       </div>
     </DashboardShell>

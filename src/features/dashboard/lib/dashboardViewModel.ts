@@ -33,7 +33,13 @@ export interface DashboardViewModel {
   dateRangeLabel: string;
   kpis: DashboardKpi[];
   chartSeries: DashboardSeriesPoint[];
+  lineChartTitle: string;
+  showPurchasesSeries: boolean;
   expenseDistribution: DashboardDistributionItem[];
+  distributionTitle: string;
+  distributionTotal: string;
+  distributionEmptyTitle: string;
+  distributionEmptyDescription: string;
   recentMovements: Movement[];
   reports: DashboardReportItem[];
   company: Company;
@@ -85,6 +91,16 @@ function isPurchase(movement: Movement) {
   );
 }
 
+function isSireSalesMovement(movement: Movement) {
+  return (
+    movement.taxable_base_amount !== undefined ||
+    movement.tax_amount !== undefined ||
+    movement.customer_name !== undefined ||
+    movement.currency_code !== undefined ||
+    movement.operation_type !== undefined
+  );
+}
+
 function groupByDate(movements: Movement[]) {
   const grouped = new Map<string, { sales: number; purchases: number }>();
 
@@ -124,9 +140,11 @@ function sumAmounts(
 
 function buildDistribution(movements: Movement[]) {
   const purchases = movements.filter(isPurchase);
+  const sourceMovements =
+    purchases.length > 0 ? purchases : movements.filter(isSale);
   const totals = new Map<string, number>();
 
-  for (const movement of purchases) {
+  for (const movement of sourceMovements) {
     const key = movement.document_type || "Otros";
     totals.set(key, (totals.get(key) ?? 0) + movement.amount);
   }
@@ -145,6 +163,10 @@ function buildDistribution(movements: Movement[]) {
       percentage: totalAmount > 0 ? Math.round((value / totalAmount) * 100) : 0,
       color: DISTRIBUTION_COLORS[index % DISTRIBUTION_COLORS.length],
     }));
+}
+
+function formatCount(value: number) {
+  return value.toLocaleString("en-US");
 }
 
 function getChangeLabel(current: number, previous: number) {
@@ -189,10 +211,39 @@ export function buildDashboardViewModel(input: {
 
   const totalSales = sumAmounts(movements, isSale);
   const totalPurchases = sumAmounts(movements, isPurchase);
+  const hasPurchases = movements.some(isPurchase);
+  const usesSireSalesMetrics = movements.some(isSireSalesMovement);
+  const totalTaxableBase = movements.reduce(
+    (total, movement) => total + (movement.taxable_base_amount ?? 0),
+    0
+  );
+  const totalTaxAmount = movements.reduce(
+    (total, movement) => total + (movement.tax_amount ?? 0),
+    0
+  );
+  const totalDocuments = movements.length;
   const currentSales = sumAmounts(current, isSale);
   const previousSales = sumAmounts(previous, isSale);
   const currentPurchases = sumAmounts(current, isPurchase);
   const previousPurchases = sumAmounts(previous, isPurchase);
+  const currentTaxableBase = current.reduce(
+    (total, movement) => total + (movement.taxable_base_amount ?? 0),
+    0
+  );
+  const previousTaxableBase = previous.reduce(
+    (total, movement) => total + (movement.taxable_base_amount ?? 0),
+    0
+  );
+  const currentTaxAmount = current.reduce(
+    (total, movement) => total + (movement.tax_amount ?? 0),
+    0
+  );
+  const previousTaxAmount = previous.reduce(
+    (total, movement) => total + (movement.tax_amount ?? 0),
+    0
+  );
+  const currentDocuments = current.length;
+  const previousDocuments = previous.length;
   const estimatedProfit = totalSales - totalPurchases;
   const previousProfit = previousSales - previousPurchases;
   const igv = totalSales * 0.18;
@@ -212,37 +263,84 @@ export function buildDashboardViewModel(input: {
     welcomeTitle: `Bienvenido, ${profile.full_name.split(" ")[0] ?? profile.full_name}`,
     subtitle: "Resumen general de tu empresa",
     dateRangeLabel,
-    kpis: [
-      {
-        label: "Ventas Totales",
-        value: formatCurrency(totalSales),
-        changeLabel: getChangeLabel(currentSales, previousSales),
-        tone: "blue",
-      },
-      {
-        label: "Compras Totales",
-        value: formatCurrency(totalPurchases),
-        changeLabel: getChangeLabel(currentPurchases, previousPurchases),
-        tone: "green",
-      },
-      {
-        label: "Utilidad Estimada",
-        value: formatCurrency(estimatedProfit),
-        changeLabel: getChangeLabel(
-          currentSales - currentPurchases,
-          previousProfit
-        ),
-        tone: "violet",
-      },
-      {
-        label: "IGV",
-        value: formatCurrency(igv),
-        changeLabel: getChangeLabel(igv, previousIgv),
-        tone: "amber",
-      },
-    ],
+    kpis: usesSireSalesMetrics
+      ? [
+          {
+            label: "Ventas Totales",
+            value: formatCurrency(totalSales),
+            changeLabel: getChangeLabel(currentSales, previousSales),
+            tone: "blue",
+          },
+          {
+            label: "Base Imponible",
+            value: formatCurrency(totalTaxableBase),
+            changeLabel: getChangeLabel(currentTaxableBase, previousTaxableBase),
+            tone: "green",
+          },
+          {
+            label: "Impuestos",
+            value: formatCurrency(totalTaxAmount),
+            changeLabel: getChangeLabel(currentTaxAmount, previousTaxAmount),
+            tone: "violet",
+          },
+          {
+            label: "Comprobantes",
+            value: formatCount(totalDocuments),
+            changeLabel: getChangeLabel(currentDocuments, previousDocuments),
+            tone: "amber",
+          },
+        ]
+      : [
+          {
+            label: "Ventas Totales",
+            value: formatCurrency(totalSales),
+            changeLabel: getChangeLabel(currentSales, previousSales),
+            tone: "blue",
+          },
+          {
+            label: "Compras Totales",
+            value: formatCurrency(totalPurchases),
+            changeLabel: getChangeLabel(currentPurchases, previousPurchases),
+            tone: "green",
+          },
+          {
+            label: "Utilidad Estimada",
+            value: formatCurrency(estimatedProfit),
+            changeLabel: getChangeLabel(
+              currentSales - currentPurchases,
+              previousProfit
+            ),
+            tone: "violet",
+          },
+          {
+            label: "IGV",
+            value: formatCurrency(igv),
+            changeLabel: getChangeLabel(igv, previousIgv),
+            tone: "amber",
+          },
+        ],
     chartSeries: groupByDate(movements),
+    lineChartTitle: usesSireSalesMetrics ? "Ventas por dia" : "Ventas vs Compras",
+    showPurchasesSeries: !usesSireSalesMetrics,
     expenseDistribution: buildDistribution(movements),
+    distributionTitle: usesSireSalesMetrics
+      ? "Ventas por tipo de comprobante"
+      : hasPurchases
+      ? "Distribucion de gastos"
+      : "Distribucion de ventas",
+    distributionTotal: formatCurrency(
+      usesSireSalesMetrics ? totalSales : hasPurchases ? totalPurchases : totalSales
+    ),
+    distributionEmptyTitle: usesSireSalesMetrics
+      ? "Aun no hay ventas para distribuir"
+      : hasPurchases
+      ? "Aun no hay gastos para distribuir"
+      : "Aun no hay ventas para distribuir",
+    distributionEmptyDescription: usesSireSalesMetrics
+      ? "Cuando tengamos el archivo de ventas de SUNAT, aqui veras la distribucion por tipo de comprobante."
+      : hasPurchases
+      ? "Cuando registres compras o egresos, aqui veras como se reparten por categoria."
+      : "Cuando tengamos ventas reales del periodo, aqui veras como se reparten por tipo de comprobante.",
     recentMovements: movements.slice(0, 5),
     reports: buildReportItems(reports),
     company,

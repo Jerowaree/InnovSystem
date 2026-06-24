@@ -1,11 +1,11 @@
 "use client";
 
+import { yupResolver } from "@hookform/resolvers/yup";
 import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
 import AuthLeftPanel from "@/components/AuthLeftPanel";
 import { canSubmit, pushAttempt } from "@/lib/rateLimit";
 import { loginSchema, type LoginFormValues } from "@/schemas/authSchemas";
@@ -49,12 +49,12 @@ export default function LoginPage() {
       <div className="md:w-1/2">
         <div className="min-h-[520px] md:h-screen">
           <AuthLeftPanel
-            title="¡Bienvenido de nuevo!"
-            subtitle="Inicia sesión para continuar administrando tu empresa de manera eficiente."
+            title="Bienvenido de nuevo"
+            subtitle="Ingresa para seguir controlando tu empresa con informacion clara y al dia."
             features={[
-              "Información segura y actualizada",
-              "Sincronización automatizada con SUNAT",
-              "Reportes y análisis inteligentes",
+              "Informacion segura y actualizada",
+              "Sincronizacion automatizada con SUNAT",
+              "Reportes y analisis utiles para tu empresa",
             ]}
             imageSrc="/trucklogin.png"
           />
@@ -64,10 +64,10 @@ export default function LoginPage() {
       <div className="flex w-full flex-1 items-center justify-center bg-white p-8 md:h-screen md:w-1/2">
         <div className="w-full max-w-md">
           <h3 className="text-2xl font-semibold text-slate-900">
-            Iniciar sesión
+            Iniciar sesion
           </h3>
           <p className="mt-2 text-sm text-slate-600">
-            Accede a tu cuenta con tu correo electrónico y contraseña.
+            Accede con tu correo electronico y tu contraseña.
           </p>
 
           <form
@@ -76,7 +76,7 @@ export default function LoginPage() {
           >
             <div>
               <label className="mb-1 block text-sm font-medium text-slate-700">
-                Correo electrónico
+                Correo electronico
               </label>
               <input
                 {...register("email")}
@@ -107,7 +107,9 @@ export default function LoginPage() {
                   onClick={() => setShowPassword((value) => !value)}
                   className="absolute top-1/2 right-3 -translate-y-1/2 text-slate-400 transition hover:text-slate-700"
                   aria-label={
-                    showPassword ? "Ocultar contraseña" : "Mostrar contraseña"
+                    showPassword
+                      ? "Ocultar contraseña"
+                      : "Mostrar contraseña"
                   }
                 >
                   {showPassword ? (
@@ -135,7 +137,7 @@ export default function LoginPage() {
                 href="/login/forgot-password"
                 className="text-sm text-blue-600 hover:text-blue-700"
               >
-                ¿Olvidaste tu contraseña?
+                Olvide mi contraseña
               </Link>
             </div>
 
@@ -151,13 +153,13 @@ export default function LoginPage() {
                 type="submit"
                 className="w-full rounded-md bg-slate-950 px-4 py-3 text-sm font-semibold text-white transition duration-200 hover:bg-blue-700 disabled:opacity-60"
               >
-                Iniciar sesión
+                Iniciar sesion
               </button>
             </div>
           </form>
 
           <div className="mt-6 text-center text-sm text-slate-600">
-            ¿No tienes una cuenta?{" "}
+            No tienes una cuenta?{" "}
             <Link
               href="/register"
               className="font-semibold text-blue-600 hover:text-blue-700"

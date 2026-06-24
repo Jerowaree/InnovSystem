@@ -1,11 +1,11 @@
 "use client";
 
-import { Eye, EyeOff } from "lucide-react";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
+import { useForm, type SubmitHandler } from "react-hook-form";
 import AuthLeftPanel from "@/components/AuthLeftPanel";
 import { canSubmit, pushAttempt } from "@/lib/rateLimit";
 import { registerSchema, type RegisterFormValues } from "@/schemas/authSchemas";
@@ -22,9 +22,15 @@ export default function RegisterPage() {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<RegisterFormValues>({ resolver: yupResolver(registerSchema) });
+  } = useForm<RegisterFormValues>({
+    resolver: yupResolver(registerSchema),
+    defaultValues: {
+      accepted: true,
+    },
+  });
+  const rucField = register("ruc");
 
-  const onSubmit = async (data: RegisterFormValues) => {
+  const onSubmit: SubmitHandler<RegisterFormValues> = async (data) => {
     const check = canSubmit(RATE_KEY);
     if (!check.allowed) {
       setBlocked("Demasiados intentos. Intenta de nuevo en un minuto.");
@@ -56,12 +62,12 @@ export default function RegisterPage() {
         <div className="min-h-[520px] md:h-screen">
           <AuthLeftPanel
             title="Crea tu cuenta"
-            subtitle="Registra tu empresa y administra tu operación con datos claros y reportes al instante."
+            subtitle="Registra tu empresa y administra tu operacion con datos claros y reportes al instante."
             imageSrc="/truckregister.png"
             features={[
-              "Accede a tu panel de gestión empresarial",
+              "Accede a tu panel de gestion empresarial",
               "Crea reportes en Excel y PDF",
-              "Consulta información oficial desde SUNAT",
+              "Consulta informacion oficial desde SUNAT",
             ]}
           />
         </div>
@@ -114,7 +120,7 @@ export default function RegisterPage() {
 
             <div>
               <label className="mb-1 block text-sm font-medium text-slate-700">
-                Correo electrónico
+                Correo electronico
               </label>
               <input
                 {...register("email")}
@@ -146,7 +152,9 @@ export default function RegisterPage() {
                     onClick={() => setShowPassword((value) => !value)}
                     className="absolute top-1/2 right-3 -translate-y-1/2 text-slate-400 transition hover:text-slate-700"
                     aria-label={
-                      showPassword ? "Ocultar contraseña" : "Mostrar contraseña"
+                      showPassword
+                        ? "Ocultar contraseña"
+                        : "Mostrar contraseña"
                     }
                   >
                     {showPassword ? (
@@ -175,12 +183,14 @@ export default function RegisterPage() {
                   />
                   <button
                     type="button"
-                    onClick={() => setShowConfirmPassword((value) => !value)}
+                    onClick={() =>
+                      setShowConfirmPassword((value) => !value)
+                    }
                     className="absolute top-1/2 right-3 -translate-y-1/2 text-slate-400 transition hover:text-slate-700"
                     aria-label={
                       showConfirmPassword
-                        ? "Ocultar confirmación de contraseña"
-                        : "Mostrar confirmación de contraseña"
+                        ? "Ocultar confirmacion de contraseña"
+                        : "Mostrar confirmacion de contraseña"
                     }
                   >
                     {showConfirmPassword ? (
@@ -203,10 +213,18 @@ export default function RegisterPage() {
                 RUC de la empresa
               </label>
               <input
-                {...register("ruc")}
+                {...rucField}
                 className={`w-full rounded-md border px-3 py-2 text-sm ${errors.ruc ? "border-red-400" : "border-slate-200"}`}
                 type="text"
+                inputMode="numeric"
+                maxLength={11}
                 placeholder="20123456789"
+                onChange={(event) => {
+                  event.target.value = event.target.value
+                    .replace(/\D/g, "")
+                    .slice(0, 11);
+                  rucField.onChange(event);
+                }}
               />
               {errors.ruc && (
                 <p className="mt-1 text-xs text-red-600">
@@ -218,14 +236,19 @@ export default function RegisterPage() {
             <div className="flex items-start gap-3">
               <input
                 id="terms"
-                {...register("accepted")}
                 type="checkbox"
-                className="h-4 w-4"
+                {...register("accepted")}
+                className="mt-1 h-4 w-4 rounded border-slate-300"
               />
               <label htmlFor="terms" className="text-sm text-slate-600">
-                Acepto los términos y condiciones
+                Acepto los términos y condiciones.
               </label>
             </div>
+            {errors.accepted && (
+              <p className="mt-1 text-xs text-red-600">
+                {errors.accepted.message}
+              </p>
+            )}
 
             {blocked && (
               <div className="rounded-md bg-red-50 p-3 text-sm text-red-700">
@@ -235,22 +258,29 @@ export default function RegisterPage() {
 
             <div>
               <button
-                type="submit"
                 disabled={isSubmitting}
-                className="w-full rounded-md bg-slate-950 px-4 py-3 text-sm font-semibold text-white transition duration-200 hover:bg-blue-700 disabled:opacity-60"
+                type="submit"
+                className="inline-flex w-full items-center justify-center rounded-md bg-slate-950 px-4 py-3 text-sm font-semibold text-white transition duration-200 hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                Crear cuenta
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Creando cuenta...
+                  </>
+                ) : (
+                  "Crear cuenta"
+                )}
               </button>
             </div>
           </form>
 
           <div className="mt-6 text-center text-sm text-slate-600">
-            ¿Ya tienes una cuenta?{" "}
+            Ya tienes una cuenta?{" "}
             <Link
               href="/login"
               className="font-semibold text-blue-600 hover:text-blue-700"
             >
-              Iniciar sesión
+              Inicia sesion
             </Link>
           </div>
         </div>

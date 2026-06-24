@@ -1,16 +1,16 @@
 export function getAuthErrorMessage(message?: string | null) {
   if (!message) {
-    return "Ocurrió un error de autenticación. Intenta nuevamente.";
+    return "Ocurrio un problema al validar tus datos. Intenta nuevamente.";
   }
 
   const normalizedMessage = message.toLowerCase();
 
   if (normalizedMessage.includes("invalid login credentials")) {
-    return "Correo o contraseña incorrectos.";
+    return "Correo o contrasena incorrectos.";
   }
 
   if (normalizedMessage.includes("email not confirmed")) {
-    return "Debes confirmar tu correo electrónico antes de iniciar sesión.";
+    return "Debes confirmar tu correo electronico antes de ingresar.";
   }
 
   if (normalizedMessage.includes("user already registered")) {
@@ -18,12 +18,12 @@ export function getAuthErrorMessage(message?: string | null) {
   }
 
   if (normalizedMessage.includes("password should be at least")) {
-    return "La contraseña no cumple con el mínimo de seguridad requerido.";
+    return "La contrasena no cumple con el minimo de seguridad requerido.";
   }
 
   if (normalizedMessage.includes("signup is disabled")) {
-    return "El registro de usuarios no está disponible en este momento.";
+    return "El registro de usuarios no esta disponible en este momento.";
   }
 
-  return "No pudimos completar la autenticación.";
+  return "No pudimos completar el proceso en este momento.";
 }

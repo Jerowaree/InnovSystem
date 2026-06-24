@@ -10,7 +10,7 @@ export async function POST(request: Request) {
 
   if (!supabaseUrl || !supabaseAnonKey) {
     return NextResponse.json(
-      { error: "No pudimos procesar el inicio de sesión." },
+      { error: "No pudimos procesar el ingreso en este momento." },
       { status: 500 }
     );
   }
@@ -22,7 +22,7 @@ export async function POST(request: Request) {
 
   if (!email || !password) {
     return NextResponse.json(
-      { error: "Correo y contraseña son obligatorios." },
+      { error: "Ingresa tu correo y tu contrasena para continuar." },
       { status: 400 }
     );
   }

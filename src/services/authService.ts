@@ -15,7 +15,7 @@ export async function loginUser(email: string, password: string) {
   if (!response.ok) {
     return {
       data: null,
-      error: new Error(data.error || "No pudimos iniciar sesión."),
+      error: new Error(data.error || "No pudimos iniciar sesion."),
     };
   }
 
@@ -24,7 +24,7 @@ export async function loginUser(email: string, password: string) {
   if (!session?.access_token || !session?.refresh_token) {
     return {
       data: null,
-      error: new Error("No pudimos completar el inicio de sesión."),
+      error: new Error("No pudimos completar el ingreso a tu cuenta."),
     };
   }
 

@@ -8,9 +8,9 @@ export function canSubmit(key: string) {
     const arr = raw ? JSON.parse(raw) : [];
     const filtered = arr.filter((t: number) => now - t < RATE_WINDOW);
     return { allowed: filtered.length < RATE_LIMIT, timestamps: filtered };
-  } catch (e) {
+  } catch (error) {
+    console.error("Error checking rate limit", error);
     return { allowed: true, timestamps: [] };
-    console.error("Error checking rate limit", e);
   }
 }
 

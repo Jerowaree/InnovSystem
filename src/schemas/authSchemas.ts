@@ -5,11 +5,11 @@ export const loginSchema = yup
     email: yup
       .string()
       .required("El correo es obligatorio")
-      .email("Correo no válido"),
+      .email("Correo no valido"),
     password: yup
       .string()
-      .required("La contraseña es obligatoria")
-      .min(8, "Mínimo 8 caracteres"),
+      .required("La contrasena es obligatoria")
+      .min(8, "Minimo 8 caracteres"),
   })
   .required();
 
@@ -30,19 +30,20 @@ export const registerSchema = yup
     password: yup
       .string()
       .required("La contraseña es obligatoria")
-      .min(8, "Mínimo 8 caracteres"),
+      .min(8, "Minimo 8 caracteres"),
     confirm: yup
       .string()
       .oneOf([yup.ref("password")], "Las contraseñas no coinciden")
-      .required("Confirmar contraseña es obligatorio"),
+      .required("Confirmar contrasena es obligatorio"),
     ruc: yup
       .string()
       .required("RUC es obligatorio")
       .matches(/^\d{11}$/, "RUC debe tener 11 dígitos"),
     accepted: yup
       .boolean()
-      .oneOf([true], "Debes aceptar los términos")
-      .required(),
+      .default(false)
+      .defined()
+      .oneOf([true], "Debes aceptar los términos"),
   })
   .required();
 
@@ -51,7 +52,7 @@ export const forgotPasswordSchema = yup
     email: yup
       .string()
       .required("El correo es obligatorio")
-      .email("Correo no válido"),
+      .email("Correo no valido"),
   })
   .required();
 

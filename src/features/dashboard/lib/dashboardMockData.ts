@@ -1,6 +1,10 @@
 import type { DashboardData } from "@/services/dashboardServiceServer";
 import type { Movement, Report } from "@/types/db";
 
+export function hasRealDashboardRecords(data: DashboardData) {
+  return data.movements.length > 0 || data.reports.length > 0;
+}
+
 function buildMockMovements(companyId: string): Movement[] {
   return [
     {
@@ -48,7 +52,7 @@ function buildMockMovements(companyId: string): Movement[] {
       company_id: companyId,
       movement_type: "Venta",
       document_type: "Factura",
-      description: "Ruta logística para cliente corporativo",
+      description: "Ruta logistica para cliente corporativo",
       amount: 6200,
       movement_date: "2026-05-19",
       created_at: "2026-05-19T11:05:00.000Z",
@@ -68,7 +72,7 @@ function buildMockMovements(companyId: string): Movement[] {
       company_id: companyId,
       movement_type: "Venta",
       document_type: "Factura",
-      description: "Distribución de mercadería en Lima",
+      description: "Distribucion de mercaderia en Lima",
       amount: 7100,
       movement_date: "2026-05-26",
       created_at: "2026-05-26T14:10:00.000Z",
@@ -113,20 +117,14 @@ function buildMockReports(companyId: string): Report[] {
 }
 
 export function applyDashboardMockData(data: DashboardData): DashboardData {
-  const shouldMockMovements = data.movements.length === 0;
-  const shouldMockReports = data.reports.length === 0;
-
-  if (!shouldMockMovements && !shouldMockReports) {
+  if (data.movements.length > 0) {
     return data;
   }
 
   return {
     ...data,
-    movements: shouldMockMovements
-      ? buildMockMovements(data.company.id)
-      : data.movements,
-    reports: shouldMockReports
-      ? buildMockReports(data.company.id)
-      : data.reports,
+    movements: buildMockMovements(data.company.id),
+    reports:
+      data.reports.length > 0 ? data.reports : buildMockReports(data.company.id),
   };
 }

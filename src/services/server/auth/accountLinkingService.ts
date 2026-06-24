@@ -5,6 +5,7 @@ import {
   getCompanyByRucServer,
 } from "@/services/server/repositories/companyRepository";
 import {
+  countProfilesByCompanyIdServer,
   createProfileServer,
   deleteProfileByUserIdServer,
   getProfileByUserIdServer,
@@ -88,7 +89,7 @@ export async function provisionCompanyAndProfileForUser(input: {
     user_id: input.userId,
     company_id: companyResult.data.id,
     full_name: fullName,
-    role: "user",
+    role: "admin",
   });
 
   if (profileResult.error || !profileResult.data) {
@@ -158,4 +159,36 @@ export async function getAuthorizedProfileForUser(userId: string) {
   }
 
   return { data: profileResult.data, error: null };
+}
+
+export async function canManageCompanySettings(userId: string) {
+  const profileResult = await getAuthorizedProfileForUser(userId);
+
+  if (profileResult.error || !profileResult.data) {
+    return { allowed: false, error: profileResult.error, data: null };
+  }
+
+  if (profileResult.data.role === "admin") {
+    return { allowed: true, error: null, data: profileResult.data };
+  }
+
+  const countResult = await countProfilesByCompanyIdServer(
+    profileResult.data.company_id
+  );
+
+  if (countResult.error) {
+    return { allowed: false, error: countResult.error, data: null };
+  }
+
+  const isSingleProfileCompany = countResult.count <= 1;
+
+  return {
+    allowed: isSingleProfileCompany,
+    error: isSingleProfileCompany
+      ? null
+      : new Error(
+          "Solo los administradores pueden modificar las credenciales de SUNAT."
+        ),
+    data: profileResult.data,
+  };
 }

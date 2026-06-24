@@ -37,3 +37,12 @@ export async function deleteProfileByUserIdServer(userId: string) {
 
   return { error };
 }
+
+export async function countProfilesByCompanyIdServer(companyId: string) {
+  const { count, error } = await supabaseServerClient
+    .from("profiles")
+    .select("*", { count: "exact", head: true })
+    .eq("company_id", companyId);
+
+  return { count: count ?? 0, error };
+}

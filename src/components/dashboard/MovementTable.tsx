@@ -16,17 +16,17 @@ function getMovementTone(movementType: string) {
 
 export default function MovementTable({ movements }: MovementTableProps) {
   return (
-    <section className="rounded-[28px] border border-white/80 bg-white px-5 py-5 shadow-[0_30px_60px_-45px_rgba(15,23,42,0.35)]">
+    <section className="min-w-0 overflow-hidden rounded-[28px] border border-white/80 bg-white px-5 py-5 shadow-[0_30px_60px_-45px_rgba(15,23,42,0.35)]">
       <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
-        <div>
+        <div className="min-w-0">
           <h2 className="text-base font-semibold text-slate-950">
-            Últimos Movimientos
+            Ultimos Movimientos
           </h2>
           <p className="mt-1 text-sm text-slate-500">
             Resumen operativo reciente de tu empresa.
           </p>
         </div>
-        <span className="text-sm font-semibold text-[#2F6BFF]">
+        <span className="max-w-full break-words text-sm font-semibold text-[#2F6BFF]">
           Ver todos los movimientos
         </span>
       </div>
@@ -40,11 +40,11 @@ export default function MovementTable({ movements }: MovementTableProps) {
           movements.map((movement) => (
             <article
               key={movement.id}
-              className="rounded-2xl border border-slate-100 bg-slate-50/70 px-4 py-4"
+              className="min-w-0 overflow-hidden rounded-2xl border border-slate-100 bg-slate-50/70 px-4 py-4"
             >
               <div className="flex items-start justify-between gap-3">
-                <div>
-                  <p className="text-sm font-semibold text-slate-900">
+                <div className="min-w-0 flex-1">
+                  <p className="break-words text-sm font-semibold text-slate-900">
                     {movement.document_type}
                   </p>
                   <p className="mt-1 text-xs text-slate-500">
@@ -52,7 +52,7 @@ export default function MovementTable({ movements }: MovementTableProps) {
                   </p>
                 </div>
                 <span
-                  className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${getMovementTone(
+                  className={`inline-flex max-w-[7rem] shrink-0 justify-center rounded-full px-2.5 py-1 text-center text-xs font-semibold ${getMovementTone(
                     movement.movement_type
                   )}`}
                 >
@@ -60,9 +60,9 @@ export default function MovementTable({ movements }: MovementTableProps) {
                 </span>
               </div>
 
-              <div className="mt-3 grid gap-2 text-sm text-slate-600">
-                <p>{movement.description}</p>
-                <p className="font-semibold text-slate-950">
+              <div className="mt-3 grid min-w-0 gap-2 text-sm text-slate-600">
+                <p className="break-words leading-6">{movement.description}</p>
+                <p className="break-words font-semibold text-slate-950">
                   S/ {movement.amount.toLocaleString("en-US")}
                 </p>
               </div>
@@ -74,7 +74,7 @@ export default function MovementTable({ movements }: MovementTableProps) {
       <div className="hidden overflow-x-auto md:block">
         <table className="min-w-full text-left text-sm">
           <thead>
-            <tr className="border-b border-slate-100 text-xs tracking-[0.18em] text-slate-400 uppercase">
+            <tr className="border-b border-slate-100 text-xs uppercase tracking-[0.18em] text-slate-400">
               <th className="pr-4 pb-3 font-medium">Fecha</th>
               <th className="pr-4 pb-3 font-medium">Documento</th>
               <th className="pr-4 pb-3 font-medium">Proveedor / Cliente</th>

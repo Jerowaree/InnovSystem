@@ -8,8 +8,20 @@ function normalizeIdentifier(identifier: string) {
   return identifier.trim().toLowerCase();
 }
 
+function buildRateLimitGuardError() {
+  return new Error(
+    "Por seguridad, no pudimos validar tu intento en este momento. Intenta de nuevo en unos minutos."
+  );
+}
+
 export async function assertRateLimit(input: {
-  action: "login" | "register" | "forgot-password";
+  action:
+    | "login"
+    | "register"
+    | "forgot-password"
+    | "sunat-sire-config"
+    | "sunat-sire-test"
+    | "sunat-sire-preview";
   identifier: string;
   limit: number;
   windowMs: number;
@@ -32,7 +44,7 @@ export async function assertRateLimit(input: {
 
   if (countResult.error) {
     console.error("Failed to count auth attempts", countResult.error);
-    return { allowed: true, error: null };
+    return { allowed: false, error: buildRateLimitGuardError() };
   }
 
   if (countResult.count >= input.limit) {
@@ -51,7 +63,7 @@ export async function assertRateLimit(input: {
 
   if (createResult.error) {
     console.error("Failed to register auth attempt", createResult.error);
-    return { allowed: true, error: null };
+    return { allowed: false, error: buildRateLimitGuardError() };
   }
 
   return { allowed: true, error: null };

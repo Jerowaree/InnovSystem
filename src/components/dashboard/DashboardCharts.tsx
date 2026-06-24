@@ -17,8 +17,13 @@ import type {
 
 interface DashboardChartsProps {
   series: DashboardSeriesPoint[];
+  lineChartTitle: string;
+  showPurchasesSeries: boolean;
   distribution: DashboardDistributionItem[];
-  totalPurchases: string;
+  distributionTitle: string;
+  distributionTotal: string;
+  distributionEmptyTitle: string;
+  distributionEmptyDescription: string;
 }
 
 function EmptyChartState({
@@ -98,8 +103,13 @@ function useMeasuredWidth() {
 
 export default function DashboardCharts({
   series,
+  lineChartTitle,
+  showPurchasesSeries,
   distribution,
-  totalPurchases,
+  distributionTitle,
+  distributionTotal,
+  distributionEmptyTitle,
+  distributionEmptyDescription,
 }: DashboardChartsProps) {
   const { containerRef, width } = useMeasuredWidth();
   const lineChartWidth = Math.max(width - 24, 220);
@@ -113,17 +123,19 @@ export default function DashboardCharts({
       <section className="min-w-0 rounded-[28px] border border-white/80 bg-white px-5 py-5 shadow-[0_30px_60px_-45px_rgba(15,23,42,0.35)]">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-base font-semibold text-slate-950">
-            Ventas vs Compras
+            {lineChartTitle}
           </h2>
           <div className="flex items-center gap-5 text-xs text-slate-500">
             <span className="inline-flex items-center gap-2">
               <span className="h-2 w-5 rounded-full bg-[#2F6BFF]" />
               Ventas
             </span>
-            <span className="inline-flex items-center gap-2">
-              <span className="h-2 w-5 rounded-full bg-[#9AA8BE]" />
-              Compras
-            </span>
+            {showPurchasesSeries ? (
+              <span className="inline-flex items-center gap-2">
+                <span className="h-2 w-5 rounded-full bg-[#9AA8BE]" />
+                Compras
+              </span>
+            ) : null}
           </div>
         </div>
 
@@ -149,20 +161,22 @@ export default function DashboardCharts({
                 dot={{ r: 0 }}
                 activeDot={{ r: 4 }}
               />
-              <Line
-                type="monotone"
-                dataKey="purchases"
-                name="Compras"
-                stroke="#94A3B8"
-                strokeWidth={2.4}
-                dot={{ r: 0 }}
-                activeDot={{ r: 4 }}
-              />
+              {showPurchasesSeries ? (
+                <Line
+                  type="monotone"
+                  dataKey="purchases"
+                  name="Compras"
+                  stroke="#94A3B8"
+                  strokeWidth={2.4}
+                  dot={{ r: 0 }}
+                  activeDot={{ r: 4 }}
+                />
+              ) : null}
             </LineChart>
           ) : width > 0 ? (
             <EmptyChartState
-              title="Aún no hay movimientos para graficar"
-              description="Cuando registres ventas y compras, aquí verás su comportamiento en el tiempo."
+              title="Aun no hay movimientos para graficar"
+              description="Cuando registres ventas y compras, aqui veras su comportamiento en el tiempo."
             />
           ) : null}
         </div>
@@ -170,7 +184,7 @@ export default function DashboardCharts({
 
       <section className="min-w-0 rounded-[28px] border border-white/80 bg-white px-5 py-5 shadow-[0_30px_60px_-45px_rgba(15,23,42,0.35)]">
         <h2 className="text-base font-semibold text-slate-950">
-          Distribución de Gastos
+          {distributionTitle}
         </h2>
 
         <div className="mt-4 grid gap-3 lg:grid-cols-[180px_minmax(0,1fr)] xl:grid-cols-1">
@@ -198,7 +212,7 @@ export default function DashboardCharts({
                     dominantBaseline="middle"
                     className="fill-slate-900 text-[18px] font-semibold"
                   >
-                    {totalPurchases}
+                    {distributionTotal}
                   </text>
                   <text
                     x="50%"
@@ -235,8 +249,8 @@ export default function DashboardCharts({
           ) : (
             <div className="lg:col-span-2 xl:col-span-1">
               <EmptyChartState
-                title="Aún no hay gastos para distribuir"
-                description="Cuando registres compras o egresos, aquí verás cómo se reparten por categoría."
+                title={distributionEmptyTitle}
+                description={distributionEmptyDescription}
               />
             </div>
           )}

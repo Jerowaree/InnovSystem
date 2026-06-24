@@ -5,6 +5,7 @@ export interface DashboardPeriod {
   label: string;
   month: number;
   year: number;
+  sirePeriodCode?: string;
 }
 
 function formatMonthLabel(year: number, month: number) {
@@ -22,6 +23,55 @@ function formatMonthLabel(year: number, month: number) {
 function getPeriodKeyFromDate(value: string) {
   const [year, month] = value.split("-").map(Number);
   return `${year}-${String(month).padStart(2, "0")}`;
+}
+
+function getPeriodKeyFromSireCode(value: string) {
+  const year = value.slice(0, 4);
+  const month = value.slice(4, 6);
+  return `${year}-${month}`;
+}
+
+export function buildDashboardPeriodsFromSire(periodCodes: string[]) {
+  return [...new Set(periodCodes)]
+    .filter((periodCode) => /^\d{6}$/.test(periodCode))
+    .sort()
+    .map((periodCode) => {
+      const yearNumber = Number(periodCode.slice(0, 4));
+      const monthNumber = Number(periodCode.slice(4, 6)) - 1;
+
+      return {
+        key: getPeriodKeyFromSireCode(periodCode),
+        month: monthNumber,
+        year: yearNumber,
+        label: formatMonthLabel(yearNumber, monthNumber),
+        sirePeriodCode: periodCode,
+      } satisfies DashboardPeriod;
+    });
+}
+
+export function mergeDashboardPeriods(
+  movementPeriods: DashboardPeriod[],
+  sirePeriods: DashboardPeriod[]
+) {
+  const mergedPeriods = new Map<string, DashboardPeriod>();
+
+  for (const period of [...movementPeriods, ...sirePeriods]) {
+    if (period.key === "all") {
+      continue;
+    }
+
+    const currentValue = mergedPeriods.get(period.key);
+
+    if (!currentValue || (!currentValue.sirePeriodCode && period.sirePeriodCode)) {
+      mergedPeriods.set(period.key, period);
+    }
+  }
+
+  const result = Array.from(mergedPeriods.values()).sort((left, right) =>
+    left.key.localeCompare(right.key)
+  );
+
+  return result.length > 0 ? result : movementPeriods;
 }
 
 export function buildDashboardPeriods(movements: Movement[]) {
@@ -43,6 +93,7 @@ export function buildDashboardPeriods(movements: Movement[]) {
         month: monthNumber,
         year: yearNumber,
         label: formatMonthLabel(yearNumber, monthNumber),
+        sirePeriodCode: `${year}${monthString}`,
       } satisfies DashboardPeriod;
     });
 
@@ -57,6 +108,7 @@ export function buildDashboardPeriods(movements: Movement[]) {
             new Date().getFullYear(),
             new Date().getMonth()
           ),
+          sirePeriodCode: undefined,
         },
       ];
 }

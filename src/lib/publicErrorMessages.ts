@@ -1,7 +1,7 @@
 export function getPublicDashboardErrorMessage() {
-  return "No pudimos validar tu acceso al dashboard.";
+  return "No pudimos validar tu acceso al panel.";
 }
 
 export function getPublicServerErrorMessage() {
-  return "Ocurrió un problema interno. Intenta nuevamente en unos minutos.";
+  return "Ocurrio un problema interno. Intenta nuevamente en unos minutos.";
 }

@@ -1,6 +1,8 @@
 import ReportsWorkspace from "@/components/dashboard/ReportsWorkspace";
+import { hasRealDashboardRecords } from "@/features/dashboard/lib/dashboardMockData";
 import { getPublicDashboardErrorMessage } from "@/lib/publicErrorMessages";
 import { loadDashboardDataServer } from "@/services/dashboardServiceServer";
+import { getSireDashboardContextForCompany } from "@/services/sunat/sireService";
 
 export default async function DashboardReportsPage() {
   const { data, error } = await loadDashboardDataServer();
@@ -20,5 +22,9 @@ export default async function DashboardReportsPage() {
     );
   }
 
-  return <ReportsWorkspace data={data} />;
+  const sireContext = await getSireDashboardContextForCompany(data.company.id, {
+    includePeriods: hasRealDashboardRecords(data),
+  });
+
+  return <ReportsWorkspace data={data} sireContext={sireContext} />;
 }

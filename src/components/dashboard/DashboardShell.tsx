@@ -2,7 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bell, ChevronDown, Menu, Search, Truck, X } from "lucide-react";
+import {
+  Bell,
+  ChevronDown,
+  Menu,
+  Search,
+  Truck,
+  X,
+} from "lucide-react";
 import { useMemo, useState } from "react";
 import Logo from "@/components/Logo";
 import DashboardLogoutButton from "@/components/dashboard/DashboardLogoutButton";
@@ -26,9 +33,9 @@ interface DashboardShellProps {
 export default function DashboardShell({
   children,
   viewModel,
-  dateSelector,
+  dateSelector: _dateSelector,
 }: DashboardShellProps) {
-  void dateSelector;
+  void _dateSelector;
   const pathname = usePathname();
   const [moduleSearchQuery, setModuleSearchQuery] = useState("");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);

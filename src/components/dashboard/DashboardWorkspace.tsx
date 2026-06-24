@@ -1,42 +1,92 @@
 "use client";
 
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useMemo, useState } from "react";
 import DashboardCharts from "@/components/dashboard/DashboardCharts";
 import DashboardShell from "@/components/dashboard/DashboardShell";
 import DashboardSidebarCards from "@/components/dashboard/DashboardSidebarCards";
 import DashboardSummary from "@/components/dashboard/DashboardSummary";
 import MovementTable from "@/components/dashboard/MovementTable";
-import { applyDashboardMockData } from "@/features/dashboard/lib/dashboardMockData";
 import {
   buildDashboardPeriods,
+  buildDashboardPeriodsFromSire,
   filterMovementsByPeriod,
   filterReportsByPeriod,
+  mergeDashboardPeriods,
 } from "@/features/dashboard/lib/dashboardPeriods";
 import { buildDashboardViewModel } from "@/features/dashboard/lib/dashboardViewModel";
 import type { DashboardData } from "@/services/dashboardServiceServer";
+import type { SireDashboardContext } from "@/types/sire";
 
 interface DashboardWorkspaceProps {
   data: DashboardData;
+  sireContext: SireDashboardContext;
 }
 
-export default function DashboardWorkspace({ data }: DashboardWorkspaceProps) {
-  const previewData = useMemo(() => applyDashboardMockData(data), [data]);
-  const periods = buildDashboardPeriods(previewData.movements);
-  const [selectedPeriodIndex, setSelectedPeriodIndex] = useState(
+export default function DashboardWorkspace({
+  data,
+  sireContext,
+}: DashboardWorkspaceProps) {
+  const hasMovementData = data.movements.length > 0;
+  const shouldUseSirePeriods =
+    !hasMovementData &&
+    (sireContext.periodCodes.length > 0 ||
+      data.source.sirePeriodCodes.length > 0) &&
+    !data.source.usesSireProposalData;
+  const movementPeriods = useMemo(
+    () => buildDashboardPeriods(data.movements),
+    [data.movements]
+  );
+  const combinedSirePeriodCodes = useMemo(
+    () =>
+      Array.from(
+        new Set([...data.source.sirePeriodCodes, ...sireContext.periodCodes])
+      ),
+    [data.source.sirePeriodCodes, sireContext.periodCodes]
+  );
+  const sirePeriods = useMemo(
+    () => buildDashboardPeriodsFromSire(combinedSirePeriodCodes),
+    [combinedSirePeriodCodes]
+  );
+  const periods = useMemo(
+    () => {
+      if (hasMovementData) {
+        return mergeDashboardPeriods(movementPeriods, sirePeriods);
+      }
+
+      if (shouldUseSirePeriods) {
+        return sirePeriods;
+      }
+
+      return movementPeriods;
+    },
+    [
+      hasMovementData,
+      movementPeriods,
+      sirePeriods,
+      shouldUseSirePeriods,
+    ]
+  );
+  const [selectedPeriodIndex, setSelectedPeriodIndex] = useState(() =>
     Math.max(0, periods.length - 1)
   );
-  const selectedPeriod = periods[selectedPeriodIndex];
+  const safeSelectedPeriodIndex =
+    periods.length === 0
+      ? 0
+      : Math.min(selectedPeriodIndex, periods.length - 1);
+  const selectedPeriod =
+    periods[safeSelectedPeriodIndex] ?? periods[Math.max(0, periods.length - 1)];
   const filteredMovements = filterMovementsByPeriod(
-    previewData.movements,
+    data.movements,
     selectedPeriod
   );
   const filteredReports = filterReportsByPeriod(
-    previewData.reports,
+    data.reports,
     selectedPeriod
   );
   const viewModel = buildDashboardViewModel({
-    company: previewData.company,
-    profile: previewData.profile,
+    company: data.company,
+    profile: data.profile,
     movements: filteredMovements,
     reports: filteredReports,
   });
@@ -44,30 +94,86 @@ export default function DashboardWorkspace({ data }: DashboardWorkspaceProps) {
   viewModel.dateRangeLabel = selectedPeriod.label;
 
   return (
-    <DashboardShell
-      viewModel={viewModel}
-      dateSelector={{
-        label: selectedPeriod.label,
-        canGoBackward: selectedPeriodIndex > 0,
-        canGoForward: selectedPeriodIndex < periods.length - 1,
-        onPrevious: () =>
-          setSelectedPeriodIndex((current) => Math.max(0, current - 1)),
-        onNext: () =>
-          setSelectedPeriodIndex((current) =>
-            Math.min(periods.length - 1, current + 1)
-          ),
-      }}
-    >
+    <DashboardShell viewModel={viewModel}>
       <div className="space-y-5">
+        <section className="rounded-[18px] border border-slate-200 bg-white px-4 py-4 shadow-[0_24px_48px_-42px_rgba(15,23,42,0.28)]">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div>
+              <p className="text-sm font-semibold text-slate-950">
+                Periodo del dashboard
+              </p>
+              <p className="mt-1 text-xs text-slate-500">
+                {selectedPeriod.label}
+                {selectedPeriod.sirePeriodCode
+                  ? ` | Codigo SUNAT ${selectedPeriod.sirePeriodCode}`
+                  : ""}
+              </p>
+            </div>
+
+            <div className="flex w-full items-center gap-2 sm:w-auto">
+              <button
+                type="button"
+                onClick={() =>
+                  setSelectedPeriodIndex((current) => Math.max(0, current - 1))
+                }
+                disabled={safeSelectedPeriodIndex <= 0}
+                className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+                aria-label="Periodo anterior"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </button>
+              <select
+                value={selectedPeriod.key}
+                onChange={(event) => {
+                  const nextIndex = periods.findIndex(
+                    (period) => period.key === event.target.value
+                  );
+
+                  if (nextIndex >= 0) {
+                    setSelectedPeriodIndex(nextIndex);
+                  }
+                }}
+                className="h-10 min-w-0 flex-1 rounded-xl border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/10 sm:min-w-[260px] sm:flex-none"
+              >
+                {periods.map((period) => (
+                  <option key={period.key} value={period.key}>
+                    {period.sirePeriodCode
+                      ? `${period.sirePeriodCode} - ${period.label}`
+                      : period.label}
+                  </option>
+                ))}
+              </select>
+              <button
+                type="button"
+                onClick={() =>
+                  setSelectedPeriodIndex((current) =>
+                    Math.min(periods.length - 1, current + 1)
+                  )
+                }
+                disabled={safeSelectedPeriodIndex >= periods.length - 1}
+                className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+                aria-label="Periodo siguiente"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+        </section>
+
         <DashboardSummary viewModel={viewModel} />
 
         <DashboardCharts
           series={viewModel.chartSeries}
+          lineChartTitle={viewModel.lineChartTitle}
+          showPurchasesSeries={viewModel.showPurchasesSeries}
           distribution={viewModel.expenseDistribution}
-          totalPurchases={viewModel.kpis[1]?.value ?? "S/ 0"}
+          distributionTitle={viewModel.distributionTitle}
+          distributionTotal={viewModel.distributionTotal}
+          distributionEmptyTitle={viewModel.distributionEmptyTitle}
+          distributionEmptyDescription={viewModel.distributionEmptyDescription}
         />
 
-        <div className="grid gap-5 xl:grid-cols-[minmax(0,1.7fr)_minmax(320px,0.9fr)]">
+        <div className="grid gap-5 2xl:grid-cols-[minmax(0,1.7fr)_minmax(320px,0.9fr)]">
           <MovementTable movements={viewModel.recentMovements} />
           <DashboardSidebarCards
             reports={viewModel.reports}

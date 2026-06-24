@@ -19,13 +19,16 @@ export async function POST(request: Request) {
 
   if (!supabaseUrl || !supabaseAnonKey) {
     return NextResponse.json(
-      { error: "Faltan variables de entorno de Supabase" },
+      { error: "No pudimos habilitar el registro en este momento." },
       { status: 500 }
     );
   }
 
   if (!name || !companyName || !email || !password || !ruc) {
-    return NextResponse.json({ error: "Datos incompletos" }, { status: 400 });
+    return NextResponse.json(
+      { error: "Completa todos los datos para crear tu cuenta." },
+      { status: 400 }
+    );
   }
 
   const normalizedEmail =
@@ -37,21 +40,21 @@ export async function POST(request: Request) {
 
   if (!/^\d{11}$/.test(normalizedRuc)) {
     return NextResponse.json(
-      { error: "El RUC debe tener 11 dígitos." },
+      { error: "El RUC debe tener 11 digitos." },
       { status: 400 }
     );
   }
 
   if (normalizedName.length < 2 || normalizedCompanyName.length < 2) {
     return NextResponse.json(
-      { error: "Los datos de registro no son válidos." },
+      { error: "Revisa los datos ingresados e intentalo nuevamente." },
       { status: 400 }
     );
   }
 
   if (typeof password !== "string" || password.length < 8) {
     return NextResponse.json(
-      { error: "La contraseña debe tener al menos 8 caracteres." },
+      { error: "La contrasena debe tener al menos 8 caracteres." },
       { status: 400 }
     );
   }
@@ -117,7 +120,7 @@ export async function POST(request: Request) {
   if (existingCompanyByEmailResult.data) {
     return NextResponse.json(
       {
-        error: "Este correo ya está asociado a una empresa registrada.",
+        error: "Este correo ya esta asociado a una empresa registrada.",
       },
       { status: 409 }
     );
@@ -147,7 +150,7 @@ export async function POST(request: Request) {
 
   if (!userId) {
     return NextResponse.json(
-      { error: "No se pudo crear el usuario" },
+      { error: "No pudimos crear tu cuenta en este momento." },
       { status: 500 }
     );
   }
@@ -177,8 +180,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json(
       {
-        error:
-          provisioningResult.error?.message || getPublicServerErrorMessage(),
+        error: getPublicServerErrorMessage(),
       },
       { status: 500 }
     );

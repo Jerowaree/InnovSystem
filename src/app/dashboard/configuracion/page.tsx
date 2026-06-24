@@ -1,6 +1,7 @@
 import SettingsWorkspace from "@/components/dashboard/SettingsWorkspace";
 import { getPublicDashboardErrorMessage } from "@/lib/publicErrorMessages";
 import { loadDashboardDataServer } from "@/services/dashboardServiceServer";
+import { getSireDashboardContextForCompany } from "@/services/sunat/sireService";
 
 export default async function DashboardSettingsPage() {
   const { data, error } = await loadDashboardDataServer();
@@ -20,5 +21,11 @@ export default async function DashboardSettingsPage() {
     );
   }
 
-  return <SettingsWorkspace data={data} />;
+  const sireContext = await getSireDashboardContextForCompany(data.company.id, {
+    includePeriods: false,
+  });
+
+  return (
+    <SettingsWorkspace data={data} initialSireConfig={sireContext.config} />
+  );
 }

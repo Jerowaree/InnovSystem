@@ -20,7 +20,9 @@ export async function registerUser(payload: RegisterPayload) {
   if (!response.ok) {
     return {
       data: null,
-      error: new Error(data.error || "Error al registrar usuario"),
+      error: new Error(
+        data.error || "No pudimos completar el registro de tu empresa."
+      ),
     };
   }
 
