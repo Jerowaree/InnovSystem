@@ -110,6 +110,9 @@ export default function DashboardWorkspace({
                   ? ` | Codigo SUNAT ${selectedPeriod.sirePeriodCode}`
                   : ""}
               </p>
+              <p className="text-xs text-slate-500 mt-2">
+                Genera un ticket desde reportes y elige el periodo para que la información aparezca aqui
+              </p>
             </div>
 
             <div className="flex w-full items-center gap-2 sm:w-auto">
