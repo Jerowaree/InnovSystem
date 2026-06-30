@@ -26,7 +26,7 @@ async function getAuthorizedCompanyId() {
   if (error || !user) {
     return {
       companyId: null,
-      error: "Tu sesion termino. Vuelve a ingresar para continuar.",
+      error: "Tu sesión termino. Vuelve a ingresar para continuar.",
       status: 401,
     };
   }

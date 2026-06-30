@@ -6,11 +6,11 @@ export function getAuthErrorMessage(message?: string | null) {
   const normalizedMessage = message.toLowerCase();
 
   if (normalizedMessage.includes("invalid login credentials")) {
-    return "Correo o contrasena incorrectos.";
+    return "Correo o contraseña incorrectos.";
   }
 
   if (normalizedMessage.includes("email not confirmed")) {
-    return "Debes confirmar tu correo electronico antes de ingresar.";
+    return "Debes confirmar tu correo electrónico antes de ingresar.";
   }
 
   if (normalizedMessage.includes("user already registered")) {
@@ -18,12 +18,12 @@ export function getAuthErrorMessage(message?: string | null) {
   }
 
   if (normalizedMessage.includes("password should be at least")) {
-    return "La contrasena no cumple con el minimo de seguridad requerido.";
+    return "La contraseña no cumple con el mínimo de seguridad requerido.";
   }
 
   if (normalizedMessage.includes("signup is disabled")) {
     return "El registro de usuarios no esta disponible en este momento.";
   }
 
-  return "No pudimos completar el proceso en este momento.";
+  return "No pudimos completar el proceso en este momento. Intentalo mas tarde";
 }

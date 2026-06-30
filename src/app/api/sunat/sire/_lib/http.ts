@@ -81,13 +81,13 @@ export async function readJsonBodyRequest<T>(
   }
 
   if (!rawBody.trim()) {
-    throw new Error("Completa la informacion requerida antes de continuar.");
+    throw new Error("Completa la información requerida antes de continuar.");
   }
 
   try {
     return JSON.parse(rawBody) as T;
   } catch {
-    throw new Error("La informacion enviada no tiene un formato valido.");
+    throw new Error("La información enviada no tiene un formato valido.");
   }
 }
 

@@ -76,7 +76,7 @@ export default function LoginPage() {
           >
             <div>
               <label className="mb-1 block text-sm font-medium text-slate-700">
-                Correo electronico
+                Correo electrónico
               </label>
               <input
                 {...register("email")}
@@ -137,7 +137,7 @@ export default function LoginPage() {
                 href="/login/forgot-password"
                 className="text-sm text-blue-600 hover:text-blue-700"
               >
-                Olvide mi contraseña
+                ¿Olvidaste tu contraseña?
               </Link>
             </div>
 

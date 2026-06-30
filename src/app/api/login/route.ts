@@ -22,7 +22,7 @@ export async function POST(request: Request) {
 
   if (!email || !password) {
     return NextResponse.json(
-      { error: "Ingresa tu correo y tu contrasena para continuar." },
+      { error: "Ingresa tu correo y tu contraseña para continuar." },
       { status: 400 }
     );
   }

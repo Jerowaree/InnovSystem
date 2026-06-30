@@ -40,7 +40,7 @@ export async function POST(request: Request) {
 
   if (!/^\d{11}$/.test(normalizedRuc)) {
     return NextResponse.json(
-      { error: "El RUC debe tener 11 digitos." },
+      { error: "El RUC debe tener 11 dígitos." },
       { status: 400 }
     );
   }
@@ -54,7 +54,7 @@ export async function POST(request: Request) {
 
   if (typeof password !== "string" || password.length < 8) {
     return NextResponse.json(
-      { error: "La contrasena debe tener al menos 8 caracteres." },
+      { error: "La contraseña debe tener al menos 8 caracteres." },
       { status: 400 }
     );
   }
