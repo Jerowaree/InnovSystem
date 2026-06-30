@@ -9,7 +9,7 @@ export async function loginThroughUi(input: {
   page: Page;
   email: string;
   password: string;
-  expectedPath?: string;
+  expectedPath?: string | RegExp;
 }) {
   await input.page.goto("/login");
   await input.page.getByLabel(/Correo electr/i).fill(input.email);

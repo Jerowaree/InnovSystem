@@ -188,7 +188,7 @@ export async function exportWorkspaceReport(input: {
           color: opts?.isNegative ? { argb: "FFFF0000" } : undefined,
         };
         if (typeof val === 'number') {
-          cellB.numFormat = '#,##0.00;[Red](#,##0.00);0.00';
+          cellB.numFmt = '#,##0.00;[Red](#,##0.00);0.00';
           cellB.alignment = { horizontal: 'right' };
         } else {
           cellB.alignment = { horizontal: 'right' };
