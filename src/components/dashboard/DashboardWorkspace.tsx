@@ -1,8 +1,8 @@
 "use client";
 
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useMemo, useState } from "react";
 import DashboardCharts from "@/components/dashboard/DashboardCharts";
+import DashboardPeriodPicker from "@/components/dashboard/DashboardPeriodPicker";
 import DashboardShell from "@/components/dashboard/DashboardShell";
 import DashboardSidebarCards from "@/components/dashboard/DashboardSidebarCards";
 import DashboardSummary from "@/components/dashboard/DashboardSummary";
@@ -82,10 +82,7 @@ export default function DashboardWorkspace({
     data.movements,
     selectedPeriod
   );
-  const filteredReports = filterReportsByPeriod(
-    data.reports,
-    selectedPeriod
-  );
+  const filteredReports = filterReportsByPeriod(data.reports, selectedPeriod);
   const viewModel = buildDashboardViewModel({
     company: data.company,
     profile: data.profile,
@@ -110,58 +107,18 @@ export default function DashboardWorkspace({
                   ? ` | Codigo SUNAT ${selectedPeriod.sirePeriodCode}`
                   : ""}
               </p>
-              <p className="text-xs text-slate-500 mt-2">
-                Genera un ticket desde reportes y elige el periodo para que la información aparezca aqui
+              <p className="mt-2 text-xs text-slate-500">
+                Genera un ticket desde reportes y elige el periodo para que la
+                informacion aparezca aqui
               </p>
             </div>
 
-            <div className="flex w-full items-center gap-2 sm:w-auto">
-              <button
-                type="button"
-                onClick={() =>
-                  setSelectedPeriodIndex((current) => Math.max(0, current - 1))
-                }
-                disabled={safeSelectedPeriodIndex <= 0}
-                className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
-                aria-label="Periodo anterior"
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </button>
-              <select
-                value={selectedPeriod.key}
-                onChange={(event) => {
-                  const nextIndex = periods.findIndex(
-                    (period) => period.key === event.target.value
-                  );
-
-                  if (nextIndex >= 0) {
-                    setSelectedPeriodIndex(nextIndex);
-                  }
-                }}
-                className="h-10 min-w-0 flex-1 rounded-xl border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/10 sm:min-w-[260px] sm:flex-none"
-              >
-                {periods.map((period) => (
-                  <option key={period.key} value={period.key}>
-                    {period.sirePeriodCode
-                      ? `${period.sirePeriodCode} - ${period.label}`
-                      : period.label}
-                  </option>
-                ))}
-              </select>
-              <button
-                type="button"
-                onClick={() =>
-                  setSelectedPeriodIndex((current) =>
-                    Math.min(periods.length - 1, current + 1)
-                  )
-                }
-                disabled={safeSelectedPeriodIndex >= periods.length - 1}
-                className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
-                aria-label="Periodo siguiente"
-              >
-                <ChevronRight className="h-4 w-4" />
-              </button>
-            </div>
+            <DashboardPeriodPicker
+              periods={periods}
+              selectedPeriod={selectedPeriod}
+              selectedPeriodIndex={safeSelectedPeriodIndex}
+              onSelectPeriod={setSelectedPeriodIndex}
+            />
           </div>
         </section>
 

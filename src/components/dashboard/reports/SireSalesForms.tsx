@@ -2,6 +2,9 @@
 
 import { Download, FileDown, Loader2, Search } from "lucide-react";
 import type { FormEventHandler } from "react";
+import CompactSelect, {
+  type CompactSelectOption,
+} from "@/components/CompactSelect";
 import type { FieldErrors, UseFormRegister } from "react-hook-form";
 import type { SireSalesWorkflowFormValues } from "@/schemas/sireSalesSchemas";
 import type { SireSalesTicketStatusItem } from "@/types/sire";
@@ -16,9 +19,11 @@ interface SireSalesProposalFormProps {
   errors: FieldErrors<SireSalesWorkflowFormValues>;
   isRequestingProposal: boolean;
   isValid: boolean;
+  onPeriodChange: (value: string) => void;
   onSubmit: FormEventHandler<HTMLFormElement>;
   periods: PeriodOption[];
   register: UseFormRegister<SireSalesWorkflowFormValues>;
+  selectedPeriod: string;
   selectedPeriodStatus: string;
 }
 
@@ -49,11 +54,27 @@ export function SireSalesProposalForm({
   errors,
   isRequestingProposal,
   isValid,
+  onPeriodChange,
   onSubmit,
   periods,
   register,
+  selectedPeriod,
   selectedPeriodStatus,
 }: SireSalesProposalFormProps) {
+  const periodOptions: CompactSelectOption[] = [
+    {
+      value: "",
+      label: "Selecciona un periodo",
+      menuLabel: "Selecciona un periodo",
+    },
+    ...periods.map((period) => ({
+      value: period.value,
+      label: period.label,
+      menuLabel: period.label,
+      description: period.status,
+    })),
+  ];
+
   return (
     <form
       onSubmit={onSubmit}
@@ -68,18 +89,20 @@ export function SireSalesProposalForm({
           >
             Periodo tributario
           </label>
-          <select
+          <input
             id="periodo"
             {...register("periodo")}
-            className="h-11 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-900 transition outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/10"
-          >
-            <option value="">Selecciona un periodo</option>
-            {periods.map((period) => (
-              <option key={period.value} value={period.value}>
-                {period.label}
-              </option>
-            ))}
-          </select>
+            className="sr-only"
+            tabIndex={-1}
+            aria-hidden="true"
+          />
+          <CompactSelect
+            ariaLabel="Seleccionar periodo tributario"
+            options={periodOptions}
+            value={selectedPeriod}
+            onChange={onPeriodChange}
+            placeholder="Selecciona un periodo"
+          />
           {errors.periodo ? (
             <p className="mt-2 text-xs text-rose-600">
               {errors.periodo.message}

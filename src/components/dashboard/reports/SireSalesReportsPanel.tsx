@@ -900,9 +900,16 @@ export function SireSalesReportsPanel({
           errors={errors}
           isRequestingProposal={isRequestingProposal}
           isValid={isValid}
+          onPeriodChange={(value) => {
+            setValue("periodo", value, {
+              shouldDirty: true,
+              shouldValidate: true,
+            });
+          }}
           onSubmit={requestProposal}
           periods={periods}
           register={register}
+          selectedPeriod={selectedPeriod}
           selectedPeriodStatus={selectedPeriodStatus}
         />
 
