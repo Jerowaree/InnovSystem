@@ -52,9 +52,9 @@ export default function LoginPage() {
             title="Bienvenido de nuevo"
             subtitle="Ingresa para seguir controlando tu empresa con informacion clara y al dia."
             features={[
-              "Informacion segura y actualizada",
-              "Sincronizacion automatizada con SUNAT",
-              "Reportes y analisis utiles para tu empresa",
+              "Información segura y actualizada",
+              "Sincronización automatizada con SUNAT",
+              "Reportes y análisis útiles para tu empresa",
             ]}
             imageSrc="/trucklogin.png"
           />

@@ -27,13 +27,13 @@ export default function Hero() {
           >
             Comenzar ahora
           </Link>
-          <a
+          <Link
             className="inline-flex items-center justify-center gap-2 rounded-none border border-slate-200 bg-white px-6 py-3.5 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 sm:min-w-[160px]"
-            href="#"
+            href="/register"
           >
             <Play className="h-4 w-4 text-blue-600" />
             Ver demo
-          </a>
+          </Link>
         </div>
 
         {/* Icons below buttons - borderless and grey styled */}
