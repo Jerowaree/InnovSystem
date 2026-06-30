@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { motion } from "motion/react";
 import {
   Cell,
   CartesianGrid,
@@ -141,43 +142,60 @@ export default function DashboardCharts({
 
         <div
           ref={containerRef}
-          className="h-[290px] min-h-[290px] w-full min-w-0"
+          className="w-full"
         >
-          {width > 0 && hasLineData ? (
-            <LineChart
-              width={lineChartWidth}
-              height={290}
-              data={series}
-              margin={{ top: 10, right: 12, left: 0, bottom: 0 }}
+          {width > 0 ? (
+            <motion.div
+              key="chart-wrapper"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+              className="h-[290px] min-h-[290px] w-full min-w-0"
             >
-              <CartesianGrid stroke="#E8EEF7" vertical={false} />
-              <Tooltip content={<CurrencyTooltip />} />
-              <Line
-                type="monotone"
-                dataKey="sales"
-                name="Ventas"
-                stroke="#2F6BFF"
-                strokeWidth={3}
-                dot={{ r: 0 }}
-                activeDot={{ r: 4 }}
-              />
-              {showPurchasesSeries ? (
-                <Line
-                  type="monotone"
-                  dataKey="purchases"
-                  name="Compras"
-                  stroke="#94A3B8"
-                  strokeWidth={2.4}
-                  dot={{ r: 0 }}
-                  activeDot={{ r: 4 }}
+              {hasLineData ? (
+                <LineChart
+                  key={`line-chart-${width}`}
+                  width={lineChartWidth}
+                  height={290}
+                  data={series}
+                  margin={{ top: 10, right: 12, left: 0, bottom: 0 }}
+                >
+                  <CartesianGrid stroke="#E8EEF7" vertical={false} />
+                  <Tooltip content={<CurrencyTooltip />} />
+                  <Line
+                    type="monotone"
+                    dataKey="sales"
+                    name="Ventas"
+                    stroke="#2F6BFF"
+                    strokeWidth={3}
+                    dot={{ r: 0 }}
+                    activeDot={{ r: 4 }}
+                    isAnimationActive={true}
+                    animationDuration={1500}
+                    animationEasing="ease-in-out"
+                  />
+                  {showPurchasesSeries ? (
+                    <Line
+                      type="monotone"
+                      dataKey="purchases"
+                      name="Compras"
+                      stroke="#94A3B8"
+                      strokeWidth={2.4}
+                      dot={{ r: 0 }}
+                      activeDot={{ r: 4 }}
+                      isAnimationActive={true}
+                      animationDuration={1500}
+                      animationEasing="ease-in-out"
+                    />
+                  ) : null}
+                </LineChart>
+              ) : (
+                <EmptyChartState
+                  title="Aun no hay movimientos para graficar"
+                  description="Cuando registres ventas y compras, aqui veras su comportamiento en el tiempo."
                 />
-              ) : null}
-            </LineChart>
-          ) : width > 0 ? (
-            <EmptyChartState
-              title="Aun no hay movimientos para graficar"
-              description="Cuando registres ventas y compras, aqui veras su comportamiento en el tiempo."
-            />
+              )}
+            </motion.div>
           ) : null}
         </div>
       </section>
@@ -193,6 +211,7 @@ export default function DashboardCharts({
               <div className="mx-auto h-[220px] w-[220px]">
                 <PieChart width={220} height={220}>
                   <Pie
+                    key={`pie-chart-${distributionTotal}`}
                     data={distribution}
                     dataKey="value"
                     nameKey="label"
@@ -200,6 +219,9 @@ export default function DashboardCharts({
                     outerRadius={88}
                     paddingAngle={2}
                     strokeWidth={0}
+                    isAnimationActive={true}
+                    animationDuration={1200}
+                    animationEasing="ease-out"
                   >
                     {distribution.map((entry) => (
                       <Cell key={entry.label} fill={entry.color} />

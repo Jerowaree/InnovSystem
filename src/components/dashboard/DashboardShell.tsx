@@ -119,12 +119,6 @@ export default function DashboardShell({
               <div className="h-1.5 w-full bg-[linear-gradient(90deg,_#2563EB_0%,_#60A5FA_100%)]" />
               <div className="px-4 py-4">
                 <div className="mb-3 flex items-center justify-between gap-3">
-                  <p className="text-[11px] font-semibold tracking-[0.16em] text-slate-400 uppercase">
-                    Empresa activa
-                  </p>
-                  <span className="inline-flex items-center rounded-full bg-emerald-50 px-2.5 py-1 text-[10px] font-semibold text-emerald-600">
-                    Operativa
-                  </span>
                 </div>
 
                 <div className="flex items-start gap-3">
@@ -144,10 +138,10 @@ export default function DashboardShell({
                 <div className="mt-4 flex items-center justify-between rounded-2xl border border-slate-200/80 bg-white/90 px-3 py-2">
                   <div>
                     <p className="text-[10px] font-medium text-slate-400 uppercase">
-                      Estado SUNAT
+                      Estado
                     </p>
                     <p className="text-xs font-semibold text-slate-700">
-                      Datos sincronizados
+                      Datos Sincronizados
                     </p>
                   </div>
                 </div>

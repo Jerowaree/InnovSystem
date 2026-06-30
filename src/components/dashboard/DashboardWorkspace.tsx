@@ -102,7 +102,7 @@ export default function DashboardWorkspace({
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div>
               <p className="text-sm font-semibold text-slate-950">
-                Periodo del dashboard
+                Periodo del Dashboard
               </p>
               <p className="mt-1 text-xs text-slate-500">
                 {selectedPeriod.label}

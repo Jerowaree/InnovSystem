@@ -103,7 +103,7 @@ export default function DashboardSidebarCards({
           </div>
 
           <button className="inline-flex max-w-full items-center break-words text-left text-sm font-semibold text-[#2F6BFF]">
-            Ver mas informacion
+            Ver mas información
           </button>
         </div>
       </section>

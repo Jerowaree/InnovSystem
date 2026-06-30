@@ -18,6 +18,7 @@ import { buildDashboardViewModel } from "@/features/dashboard/lib/dashboardViewM
 import type { DashboardData } from "@/services/dashboardServiceServer";
 import type { SireDashboardContext } from "@/types/sire";
 import { exportWorkspaceReport } from "@/components/dashboard/reports/reportsWorkspaceExport";
+import AnimatedCounter from "@/components/dashboard/AnimatedCounter";
 
 interface ReportsWorkspaceProps {
   data: DashboardData;
@@ -250,7 +251,7 @@ export default function ReportsWorkspace({
                     Ingresos
                   </p>
                   <p className="mt-2 text-lg font-semibold text-slate-950">
-                    {viewModel.kpis[0]?.value ?? "S/ 0"}
+                    <AnimatedCounter value={totalSales} prefix="S/ " />
                   </p>
                 </div>
                 <div className="rounded-2xl bg-white px-4 py-4">
@@ -258,7 +259,7 @@ export default function ReportsWorkspace({
                     Egresos
                   </p>
                   <p className="mt-2 text-lg font-semibold text-slate-950">
-                    S/ {totalExpenses.toLocaleString("en-US")}
+                    <AnimatedCounter value={totalExpenses} prefix="S/ " />
                   </p>
                 </div>
                 <div className="rounded-2xl bg-white px-4 py-4">
@@ -266,7 +267,7 @@ export default function ReportsWorkspace({
                     Impuestos
                   </p>
                   <p className="mt-2 text-lg font-semibold text-slate-950">
-                    S/ {totalTaxes.toLocaleString("en-US")}
+                    <AnimatedCounter value={totalTaxes} prefix="S/ " />
                   </p>
                 </div>
                 <div className="rounded-2xl bg-white px-4 py-4">
@@ -274,7 +275,7 @@ export default function ReportsWorkspace({
                     Comprobantes
                   </p>
                   <p className="mt-2 text-lg font-semibold text-slate-950">
-                    {filteredMovements.length}
+                    <AnimatedCounter value={filteredMovements.length} />
                   </p>
                 </div>
               </div>
@@ -309,32 +310,33 @@ export default function ReportsWorkspace({
                 </div>
                 <div className="min-w-0">
                   <div className="mb-3 flex items-center gap-2">
-                    <span className="text-xs font-medium uppercase tracking-[0.14em] text-slate-500">
-                      Semaforo
+                    <span className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">
+                      Estado:
                     </span>
-                    <div className="flex items-center gap-2 rounded-full bg-white/80 px-3 py-1.5">
+                    <span
+                      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-bold ${
+                        semaphoreState === "green"
+                          ? "bg-emerald-100/70 text-emerald-800"
+                          : semaphoreState === "red"
+                            ? "bg-rose-100/70 text-rose-800"
+                            : "bg-amber-100/70 text-amber-800"
+                      }`}
+                    >
                       <span
-                        className={`h-3 w-3 rounded-full ${
+                        className={`h-1.5 w-1.5 rounded-full ${
                           semaphoreState === "green"
-                            ? "bg-emerald-500 ring-4 ring-emerald-100"
-                            : "bg-slate-200"
+                            ? "bg-emerald-500"
+                            : semaphoreState === "red"
+                              ? "bg-rose-500"
+                              : "bg-amber-500"
                         }`}
                       />
-                      <span
-                        className={`h-3 w-3 rounded-full ${
-                          semaphoreState === "yellow"
-                            ? "bg-amber-500 ring-4 ring-amber-100"
-                            : "bg-slate-200"
-                        }`}
-                      />
-                      <span
-                        className={`h-3 w-3 rounded-full ${
-                          semaphoreState === "red"
-                            ? "bg-rose-500 ring-4 ring-rose-100"
-                            : "bg-slate-200"
-                        }`}
-                      />
-                    </div>
+                      {semaphoreState === "green"
+                        ? "Favorable"
+                        : semaphoreState === "red"
+                          ? "Riesgo"
+                          : "Estable"}
+                    </span>
                   </div>
                   <p className="text-sm font-semibold text-slate-900">
                     {netResult > 0
@@ -353,7 +355,7 @@ export default function ReportsWorkspace({
                     }`}
                   >
                     {netResult > 0 ? "+" : netResult < 0 ? "-" : ""}
-                    {formattedNetResult}
+                    <AnimatedCounter value={Math.abs(netResult)} prefix="S/ " />
                   </p>
                   <p className="mt-3 text-sm leading-6 text-slate-600">
                     Este resultado toma los ingresos del periodo y les descuenta

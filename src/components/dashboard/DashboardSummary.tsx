@@ -5,6 +5,7 @@ import {
   Wallet,
 } from "lucide-react";
 import type { DashboardViewModel } from "@/features/dashboard/lib/dashboardViewModel";
+import AnimatedCounter from "@/components/dashboard/AnimatedCounter";
 
 interface DashboardSummaryProps {
   viewModel: DashboardViewModel;
@@ -24,11 +25,21 @@ const iconWrapperByTone = {
   amber: "bg-slate-100 text-slate-700",
 };
 
+function parseKpiValue(valueStr: string) {
+  const clean = valueStr.replace(/[^\d.-]/g, '');
+  const num = parseFloat(clean) || 0;
+  const prefix = valueStr.includes("S/") ? "S/ " : "";
+  // Check if it has a decimal point and determine number of decimals
+  const decimals = valueStr.includes(".") ? valueStr.split(".")[1]?.length || 0 : 0;
+  return { num, prefix, decimals };
+}
+
 export default function DashboardSummary({ viewModel }: DashboardSummaryProps) {
   return (
     <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
       {viewModel.kpis.map((item) => {
         const Icon = iconByTone[item.tone];
+        const parsed = parseKpiValue(item.value);
 
         return (
           <article
@@ -41,7 +52,11 @@ export default function DashboardSummary({ viewModel }: DashboardSummaryProps) {
                   {item.label}
                 </p>
                 <p className="mt-2 text-[1.8rem] font-semibold tracking-[-0.04em] text-slate-950">
-                  {item.value}
+                  <AnimatedCounter
+                    value={parsed.num}
+                    prefix={parsed.prefix}
+                    decimals={parsed.decimals}
+                  />
                 </p>
               </div>
 
