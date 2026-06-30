@@ -9,6 +9,9 @@
     "start": "next start",
     "lint": "eslint .",
     "test": "jest --runInBand",
+    "test:e2e": "playwright test",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:install": "playwright install chromium",
     "lint:fix": "eslint . --fix",
     "format": "prettier . --write",
     "format:check": "prettier . --check"
@@ -35,6 +38,7 @@
   },
   "devDependencies": {
     "@hookform/resolvers": "^5.2.2",
+    "@playwright/test": "^1.61.1",
     "@tailwindcss/postcss": "^4",
     "@types/jest": "^29.5.14",
     "@types/node": "^20",

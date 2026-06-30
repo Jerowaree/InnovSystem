@@ -10,6 +10,7 @@ import MovementTable from "@/components/dashboard/MovementTable";
 import {
   buildDashboardPeriods,
   buildDashboardPeriodsFromSire,
+  ensureDashboardPeriods,
   filterMovementsByPeriod,
   filterReportsByPeriod,
   mergeDashboardPeriods,
@@ -51,14 +52,16 @@ export default function DashboardWorkspace({
   const periods = useMemo(
     () => {
       if (hasMovementData) {
-        return mergeDashboardPeriods(movementPeriods, sirePeriods);
+        return ensureDashboardPeriods(
+          mergeDashboardPeriods(movementPeriods, sirePeriods)
+        );
       }
 
       if (shouldUseSirePeriods) {
-        return sirePeriods;
+        return ensureDashboardPeriods(sirePeriods);
       }
 
-      return movementPeriods;
+      return ensureDashboardPeriods(movementPeriods);
     },
     [
       hasMovementData,
@@ -74,8 +77,7 @@ export default function DashboardWorkspace({
     periods.length === 0
       ? 0
       : Math.min(selectedPeriodIndex, periods.length - 1);
-  const selectedPeriod =
-    periods[safeSelectedPeriodIndex] ?? periods[Math.max(0, periods.length - 1)];
+  const selectedPeriod = periods[safeSelectedPeriodIndex];
   const filteredMovements = filterMovementsByPeriod(
     data.movements,
     selectedPeriod

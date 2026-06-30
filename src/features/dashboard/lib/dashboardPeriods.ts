@@ -8,6 +8,18 @@ export interface DashboardPeriod {
   sirePeriodCode?: string;
 }
 
+function createDashboardFallbackPeriod(): DashboardPeriod {
+  const now = new Date();
+
+  return {
+    key: "all",
+    month: now.getMonth(),
+    year: now.getFullYear(),
+    label: formatMonthLabel(now.getFullYear(), now.getMonth()),
+    sirePeriodCode: undefined,
+  };
+}
+
 function formatMonthLabel(year: number, month: number) {
   const startDate = new Date(year, month, 1);
   const endDate = new Date(year, month + 1, 0);
@@ -31,9 +43,18 @@ function getPeriodKeyFromSireCode(value: string) {
   return `${year}-${month}`;
 }
 
+function isValidSirePeriodCode(periodCode: string) {
+  if (!/^\d{6}$/.test(periodCode)) {
+    return false;
+  }
+
+  const monthNumber = Number(periodCode.slice(4, 6));
+  return monthNumber >= 1 && monthNumber <= 12;
+}
+
 export function buildDashboardPeriodsFromSire(periodCodes: string[]) {
   return [...new Set(periodCodes)]
-    .filter((periodCode) => /^\d{6}$/.test(periodCode))
+    .filter(isValidSirePeriodCode)
     .sort()
     .map((periodCode) => {
       const yearNumber = Number(periodCode.slice(0, 4));
@@ -71,7 +92,7 @@ export function mergeDashboardPeriods(
     left.key.localeCompare(right.key)
   );
 
-  return result.length > 0 ? result : movementPeriods;
+  return result.length > 0 ? result : ensureDashboardPeriods(movementPeriods);
 }
 
 export function buildDashboardPeriods(movements: Movement[]) {
@@ -97,20 +118,11 @@ export function buildDashboardPeriods(movements: Movement[]) {
       } satisfies DashboardPeriod;
     });
 
-  return periods.length > 0
-    ? periods
-    : [
-        {
-          key: "all",
-          month: new Date().getMonth(),
-          year: new Date().getFullYear(),
-          label: formatMonthLabel(
-            new Date().getFullYear(),
-            new Date().getMonth()
-          ),
-          sirePeriodCode: undefined,
-        },
-      ];
+  return ensureDashboardPeriods(periods);
+}
+
+export function ensureDashboardPeriods(periods: DashboardPeriod[]) {
+  return periods.length > 0 ? periods : [createDashboardFallbackPeriod()];
 }
 
 export function filterMovementsByPeriod(

@@ -1,7 +1,7 @@
 "use client";
 
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useAsyncGuards } from "@/hooks/useAsyncGuards";
 import { createSireConfigSchema } from "@/schemas/sireSchemas";
@@ -11,6 +11,8 @@ import type {
   SireStatusResponse,
 } from "@/types/sire";
 import { emptyStatus, getDefaultValues } from "./settingsUtils";
+
+const FEEDBACK_TIMEOUT_MS = 5_000;
 
 export function useSireSettingsForm(
   companyRuc: string,
@@ -52,6 +54,20 @@ export function useSireSettingsForm(
     setServerError(null);
     setSuccessMessage(null);
   };
+
+  useEffect(() => {
+    if (!serverError && !successMessage) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      clearMessages();
+    }, FEEDBACK_TIMEOUT_MS);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [serverError, successMessage]);
 
   const restoreForm = () => {
     form.reset(getDefaultValues(companyRuc, savedConfig));

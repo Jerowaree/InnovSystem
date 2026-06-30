@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { readJsonBody } from "@/lib/readJsonBody";
 import { assertRateLimit } from "@/services/server/auth/authRateLimitService";
 import { getRequestFingerprint } from "@/services/server/auth/requestFingerprint";
 
@@ -14,7 +15,16 @@ export async function POST(request: Request) {
     );
   }
 
-  const body = await request.json();
+  const bodyResult = await readJsonBody<{ email?: unknown }>(
+    request,
+    "No pudimos leer el correo enviado. Revisa el formulario y vuelve a intentarlo."
+  );
+
+  if (!bodyResult.ok) {
+    return NextResponse.json({ error: bodyResult.error }, { status: 400 });
+  }
+
+  const body = bodyResult.data;
   const email =
     typeof body.email === "string" ? body.email.trim().toLowerCase() : "";
 

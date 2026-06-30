@@ -1,8 +1,9 @@
-import { supabaseServerClient } from "@/lib/supabaseServerClient";
+import { getSupabaseServerClient } from "@/lib/supabaseServerClient";
 import type { Profile } from "@/types/db";
 
 export async function getProfileByUserIdServer(userId: string) {
-  const { data, error } = await supabaseServerClient
+  const supabase = getSupabaseServerClient();
+  const { data, error } = await supabase
     .from("profiles")
     .select("*")
     .eq("user_id", userId)
@@ -14,7 +15,8 @@ export async function getProfileByUserIdServer(userId: string) {
 export async function createProfileServer(
   profile: Omit<Profile, "id" | "created_at">
 ) {
-  const { data, error } = await supabaseServerClient
+  const supabase = getSupabaseServerClient();
+  const { data, error } = await supabase
     .from("profiles")
     .insert([
       {
@@ -30,7 +32,8 @@ export async function createProfileServer(
 }
 
 export async function deleteProfileByUserIdServer(userId: string) {
-  const { error } = await supabaseServerClient
+  const supabase = getSupabaseServerClient();
+  const { error } = await supabase
     .from("profiles")
     .delete()
     .eq("user_id", userId);
@@ -39,7 +42,8 @@ export async function deleteProfileByUserIdServer(userId: string) {
 }
 
 export async function countProfilesByCompanyIdServer(companyId: string) {
-  const { count, error } = await supabaseServerClient
+  const supabase = getSupabaseServerClient();
+  const { count, error } = await supabase
     .from("profiles")
     .select("*", { count: "exact", head: true })
     .eq("company_id", companyId);

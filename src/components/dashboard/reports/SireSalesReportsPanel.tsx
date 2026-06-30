@@ -117,6 +117,8 @@ export function SireSalesReportsPanel({
   const [ticketHistory, setTicketHistory] = useState<SireSalesTicketSummary[]>(
     []
   );
+  const [ticketHistoryStatusMessage, setTicketHistoryStatusMessage] =
+    useState<string | null>(null);
   const [ticketHistoryPage, setTicketHistoryPage] = useState(1);
   const [ticketHistoryTotalCount, setTicketHistoryTotalCount] = useState(0);
   const [ticketHistoryTotalPages, setTicketHistoryTotalPages] = useState(1);
@@ -260,10 +262,20 @@ export function SireSalesReportsPanel({
         setTicketHistoryTotalPages(payload.totalPages);
         setTicketHistoryHasNextPage(payload.hasNextPage);
         setTicketHistoryHasPreviousPage(payload.hasPreviousPage);
+        setTicketHistoryStatusMessage(null);
       });
     } catch (error) {
-      if (!isAbortControllerError(error) && showErrorAsBanner) {
+      if (!isAbortControllerError(error)) {
         runIfMounted(() => {
+          setTicketHistoryStatusMessage(
+            error instanceof Error
+              ? error.message
+              : "No pudimos cargar tu historial de solicitudes."
+          );
+        });
+
+        if (showErrorAsBanner) {
+          runIfMounted(() => {
           setFeedback({
             type: "error",
             message:
@@ -271,7 +283,8 @@ export function SireSalesReportsPanel({
                 ? error.message
                 : "No pudimos cargar tu historial de solicitudes.",
           });
-        });
+          });
+        }
       }
     } finally {
       finalizeAbortController(abortController);
@@ -938,6 +951,7 @@ export function SireSalesReportsPanel({
           currentPage={ticketHistoryPage}
           hasNextPage={ticketHistoryHasNextPage}
           hasPreviousPage={ticketHistoryHasPreviousPage}
+          historyStatusMessage={ticketHistoryStatusMessage}
           isLoadingHistory={isLoadingHistory}
           onDownloadTicket={(ticket) => {
             setValue("periodo", ticket.periodo, {

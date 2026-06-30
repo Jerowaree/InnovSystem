@@ -1,10 +1,11 @@
-import { supabaseServerClient } from "@/lib/supabaseServerClient";
+import { getSupabaseServerClient } from "@/lib/supabaseServerClient";
 
 export async function updateAuthUserMetadataServer(
   userId: string,
   metadata: Record<string, unknown>
 ) {
-  const { data, error } = await supabaseServerClient.auth.admin.updateUserById(
+  const supabase = getSupabaseServerClient();
+  const { data, error } = await supabase.auth.admin.updateUserById(
     userId,
     {
       user_metadata: metadata,
@@ -15,8 +16,8 @@ export async function updateAuthUserMetadataServer(
 }
 
 export async function deleteAuthUserServer(userId: string) {
-  const { data, error } =
-    await supabaseServerClient.auth.admin.deleteUser(userId);
+  const supabase = getSupabaseServerClient();
+  const { data, error } = await supabase.auth.admin.deleteUser(userId);
 
   return { data, error };
 }

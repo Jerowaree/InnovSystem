@@ -249,7 +249,25 @@ export async function getSireDashboardContextForCompany(
   }
 
   const request = (async () => {
-    const config = await getSireConfigSummaryInternal(companyId);
+    let config: SireConfigSummary | null;
+
+    try {
+      config = await getSireConfigSummaryInternal(companyId);
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "No pudimos cargar la configuracion SIRE.";
+      const context = {
+        config: null,
+        periodCodes: [],
+        availability: "unavailable",
+        message,
+      } satisfies SireDashboardContext;
+
+      setCachedDashboardContext(cacheKey, context);
+      return context;
+    }
 
     if (!config) {
       const context = {

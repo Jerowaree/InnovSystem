@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { getAuthErrorMessage } from "@/lib/authErrorMessages";
 import { getPublicServerErrorMessage } from "@/lib/publicErrorMessages";
+import { readJsonBody } from "@/lib/readJsonBody";
 import { assertRateLimit } from "@/services/server/auth/authRateLimitService";
 import { getRequestFingerprint } from "@/services/server/auth/requestFingerprint";
 import { provisionCompanyAndProfileForUser } from "@/services/server/auth/accountLinkingService";
@@ -14,7 +15,22 @@ import {
 export async function POST(request: Request) {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  const body = await request.json();
+  const bodyResult = await readJsonBody<{
+    name?: unknown;
+    companyName?: unknown;
+    email?: unknown;
+    password?: unknown;
+    ruc?: unknown;
+  }>(
+    request,
+    "No pudimos leer los datos del registro. Revisa el formulario y vuelve a intentarlo."
+  );
+
+  if (!bodyResult.ok) {
+    return NextResponse.json({ error: bodyResult.error }, { status: 400 });
+  }
+
+  const body = bodyResult.data;
   const { name, companyName, email, password, ruc } = body;
 
   if (!supabaseUrl || !supabaseAnonKey) {
@@ -187,7 +203,13 @@ export async function POST(request: Request) {
   }
 
   return NextResponse.json({
-    user: data.user,
-    profile: provisioningResult.data,
+    message:
+      "Tu cuenta fue creada correctamente. Ya puedes iniciar sesion para entrar al panel.",
+    profile: {
+      id: provisioningResult.data.id,
+      companyId: provisioningResult.data.company_id,
+      role: provisioningResult.data.role,
+      fullName: provisioningResult.data.full_name,
+    },
   });
 }

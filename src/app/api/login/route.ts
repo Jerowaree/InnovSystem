@@ -1,21 +1,31 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
 import { getAuthErrorMessage } from "@/lib/authErrorMessages";
+import { createSupabaseServerClient } from "@/lib/supabaseServer";
+import { readJsonBody } from "@/lib/readJsonBody";
 import { assertRateLimit } from "@/services/server/auth/authRateLimitService";
 import { getRequestFingerprint } from "@/services/server/auth/requestFingerprint";
 
 export async function POST(request: Request) {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-  if (!supabaseUrl || !supabaseAnonKey) {
+  if (
+    !process.env.NEXT_PUBLIC_SUPABASE_URL ||
+    !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  ) {
     return NextResponse.json(
       { error: "No pudimos procesar el ingreso en este momento." },
       { status: 500 }
     );
   }
 
-  const body = await request.json();
+  const bodyResult = await readJsonBody<{
+    email?: unknown;
+    password?: unknown;
+  }>(request);
+
+  if (!bodyResult.ok) {
+    return NextResponse.json({ error: bodyResult.error }, { status: 400 });
+  }
+
+  const body = bodyResult.data;
   const email =
     typeof body.email === "string" ? body.email.trim().toLowerCase() : "";
   const password = typeof body.password === "string" ? body.password : "";
@@ -45,10 +55,10 @@ export async function POST(request: Request) {
     );
   }
 
-  const supabase = createClient(supabaseUrl, supabaseAnonKey);
+  const supabase = await createSupabaseServerClient();
   const result = await supabase.auth.signInWithPassword({ email, password });
 
-  if (result.error || !result.data.session) {
+  if (result.error || !result.data.user) {
     return NextResponse.json(
       {
         error: getAuthErrorMessage(result.error?.message),
@@ -58,9 +68,9 @@ export async function POST(request: Request) {
   }
 
   return NextResponse.json({
-    session: {
-      access_token: result.data.session.access_token,
-      refresh_token: result.data.session.refresh_token,
+    user: {
+      id: result.data.user.id,
+      email: result.data.user.email ?? email,
     },
   });
 }

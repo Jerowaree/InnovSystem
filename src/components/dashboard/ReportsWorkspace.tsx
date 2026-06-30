@@ -1,13 +1,14 @@
 "use client";
 
 import Image from "next/image";
-import { TrendingDown, TrendingUp } from "lucide-react";
-import { useMemo, useState } from "react";
+import { Loader2, TrendingDown, TrendingUp } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import DashboardShell from "@/components/dashboard/DashboardShell";
 import { LazySireSalesReportsPanel } from "@/components/dashboard/reports/LazySireSalesReportsPanel";
 import {
   buildDashboardPeriods,
   buildDashboardPeriodsFromSire,
+  ensureDashboardPeriods,
   filterMovementsByPeriod,
   filterReportsByPeriod,
   mergeDashboardPeriods,
@@ -21,6 +22,11 @@ import { exportWorkspaceReport } from "@/components/dashboard/reports/reportsWor
 interface ReportsWorkspaceProps {
   data: DashboardData;
   sireContext: SireDashboardContext;
+}
+
+interface ExportFeedbackState {
+  type: "success" | "error" | null;
+  message: string;
 }
 
 export default function ReportsWorkspace({
@@ -43,18 +49,22 @@ export default function ReportsWorkspace({
     [combinedSirePeriodCodes]
   );
   const periods = useMemo(
-    () => mergeDashboardPeriods(movementPeriods, sirePeriods),
+    () => ensureDashboardPeriods(mergeDashboardPeriods(movementPeriods, sirePeriods)),
     [movementPeriods, sirePeriods]
   );
   const [selectedPeriodIndex, setSelectedPeriodIndex] = useState(() =>
     Math.max(0, periods.length - 1)
   );
+  const [isExportingBalance, setIsExportingBalance] = useState(false);
+  const [exportFeedback, setExportFeedback] = useState<ExportFeedbackState>({
+    type: null,
+    message: "",
+  });
   const safeSelectedPeriodIndex =
     periods.length === 0
       ? 0
       : Math.min(selectedPeriodIndex, periods.length - 1);
-  const selectedPeriod =
-    periods[safeSelectedPeriodIndex] ?? periods[Math.max(0, periods.length - 1)];
+  const selectedPeriod = periods[safeSelectedPeriodIndex];
   const filteredMovements = filterMovementsByPeriod(data.movements, selectedPeriod);
   const filteredReports = filterReportsByPeriod(data.reports, selectedPeriod);
   const viewModel = buildDashboardViewModel({
@@ -84,29 +94,64 @@ export default function ReportsWorkspace({
     maximumFractionDigits: 0,
   })}`;
 
+  useEffect(() => {
+    if (!exportFeedback.type) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setExportFeedback({ type: null, message: "" });
+    }, 5000);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [exportFeedback]);
+
   const exportAccountBalance = async () => {
-    await exportWorkspaceReport({
-      type: "balance",
-      selectedPeriod: selectedPeriod as DashboardPeriod,
-      companyName: data.company.business_name,
-      companyRuc: data.company.ruc,
-      movements: filteredMovements,
-      reports: filteredReports,
-      totalSalesLabel: viewModel.kpis[0]?.value ?? "S/ 0",
-      totalPurchasesLabel: `S/ ${totalExpenses.toLocaleString("en-US", {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0,
-      })}`,
-      estimatedProfitLabel: `${isProfitable ? "Ganancia" : "Perdida"} ${formattedNetResult}`,
-      igvLabel: `S/ ${totalTaxes.toLocaleString("en-US", {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0,
-      })}`,
-      totalSalesAmount: totalSales,
-      totalPurchasesAmount: totalExpenses,
-      estimatedProfitAmount: netResult,
-      igvAmount: totalTaxes,
-    });
+    try {
+      setIsExportingBalance(true);
+      setExportFeedback({ type: null, message: "" });
+
+      await exportWorkspaceReport({
+        type: "balance",
+        selectedPeriod: selectedPeriod as DashboardPeriod,
+        companyName: data.company.business_name,
+        companyRuc: data.company.ruc,
+        movements: filteredMovements,
+        reports: filteredReports,
+        totalSalesLabel: viewModel.kpis[0]?.value ?? "S/ 0",
+        totalPurchasesLabel: `S/ ${totalExpenses.toLocaleString("en-US", {
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 0,
+        })}`,
+        estimatedProfitLabel: `${isProfitable ? "Ganancia" : "Perdida"} ${formattedNetResult}`,
+        igvLabel: `S/ ${totalTaxes.toLocaleString("en-US", {
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 0,
+        })}`,
+        totalSalesAmount: totalSales,
+        totalPurchasesAmount: totalExpenses,
+        estimatedProfitAmount: netResult,
+        igvAmount: totalTaxes,
+      });
+
+      setExportFeedback({
+        type: "success",
+        message:
+          "Tu archivo Excel ya se descargo correctamente. Puedes compartirlo o revisarlo ahora mismo.",
+      });
+    } catch (error) {
+      setExportFeedback({
+        type: "error",
+        message:
+          error instanceof Error
+            ? error.message
+            : "No pudimos exportar el Excel en este momento. Vuelve a intentarlo.",
+      });
+    } finally {
+      setIsExportingBalance(false);
+    }
   };
 
   return (
@@ -129,18 +174,35 @@ export default function ReportsWorkspace({
             <button
               type="button"
               onClick={() => void exportAccountBalance()}
+              disabled={isExportingBalance}
               className="inline-flex h-11 items-center justify-center gap-3 rounded-xl border border-emerald-200 bg-emerald-50 px-5 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-100"
             >
-              <Image
-                src="/excel.png"
-                alt="Excel"
-                width={18}
-                height={18}
-                className="h-[18px] w-[18px]"
-              />
-              Exportar balance general
+              {isExportingBalance ? (
+                <Loader2 className="h-[18px] w-[18px] animate-spin" />
+              ) : (
+                <Image
+                  src="/excel.png"
+                  alt="Excel"
+                  width={18}
+                  height={18}
+                  className="h-[18px] w-[18px]"
+                />
+              )}
+              {isExportingBalance ? "Exportando..." : "Exportar balance general"}
             </button>
           </div>
+
+          {exportFeedback.type ? (
+            <div
+              className={`mt-4 rounded-2xl px-4 py-3 text-sm ${
+                exportFeedback.type === "success"
+                  ? "border border-emerald-200 bg-emerald-50 text-emerald-700"
+                  : "border border-rose-200 bg-rose-50 text-rose-700"
+              }`}
+            >
+              {exportFeedback.message}
+            </div>
+          ) : null}
 
           <div className="mt-5 grid gap-4 lg:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)]">
             <div className="rounded-2xl border border-slate-200 bg-slate-50/60 p-5">

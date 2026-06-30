@@ -1,4 +1,4 @@
-import { supabaseServerClient } from "@/lib/supabaseServerClient";
+import { getSupabaseServerClient } from "@/lib/supabaseServerClient";
 import type { Company } from "@/types/db";
 
 function normalizeEmail(email: string) {
@@ -10,7 +10,8 @@ function normalizeRuc(ruc: string) {
 }
 
 export async function getCompanyByIdServer(companyId: string) {
-  const { data, error } = await supabaseServerClient
+  const supabase = getSupabaseServerClient();
+  const { data, error } = await supabase
     .from("companies")
     .select("*")
     .eq("id", companyId)
@@ -22,7 +23,8 @@ export async function getCompanyByIdServer(companyId: string) {
 export async function getCompanyByEmailServer(email: string) {
   const normalizedEmail = normalizeEmail(email);
 
-  const { data, error } = await supabaseServerClient
+  const supabase = getSupabaseServerClient();
+  const { data, error } = await supabase
     .from("companies")
     .select("*")
     .ilike("email", normalizedEmail)
@@ -34,7 +36,8 @@ export async function getCompanyByEmailServer(email: string) {
 export async function getCompanyByRucServer(ruc: string) {
   const normalizedRuc = normalizeRuc(ruc);
 
-  const { data, error } = await supabaseServerClient
+  const supabase = getSupabaseServerClient();
+  const { data, error } = await supabase
     .from("companies")
     .select("*")
     .eq("ruc", normalizedRuc)
@@ -46,7 +49,8 @@ export async function getCompanyByRucServer(ruc: string) {
 export async function createCompanyServer(
   company: Omit<Company, "id" | "created_at">
 ) {
-  const { data, error } = await supabaseServerClient
+  const supabase = getSupabaseServerClient();
+  const { data, error } = await supabase
     .from("companies")
     .insert([
       {
@@ -63,7 +67,8 @@ export async function createCompanyServer(
 }
 
 export async function deleteCompanyByIdServer(companyId: string) {
-  const { error } = await supabaseServerClient
+  const supabase = getSupabaseServerClient();
+  const { error } = await supabase
     .from("companies")
     .delete()
     .eq("id", companyId);

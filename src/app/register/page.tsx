@@ -25,7 +25,7 @@ export default function RegisterPage() {
   } = useForm<RegisterFormValues>({
     resolver: yupResolver(registerSchema),
     defaultValues: {
-      accepted: true,
+      accepted: false,
     },
   });
   const rucField = register("ruc");
@@ -65,9 +65,9 @@ export default function RegisterPage() {
             subtitle="Registra tu empresa y administra tu operacion con datos claros y reportes al instante."
             imageSrc="/truckregister.png"
             features={[
-              "Accede a tu panel de gestion empresarial",
+              "Accede a tu panel de gestión empresarial",
               "Crea reportes en Excel y PDF",
-              "Consulta informacion oficial desde SUNAT",
+              "Consulta información oficial desde SUNAT",
             ]}
           />
         </div>
@@ -275,12 +275,12 @@ export default function RegisterPage() {
           </form>
 
           <div className="mt-6 text-center text-sm text-slate-600">
-            Ya tienes una cuenta?{" "}
+            ¿Ya tienes una cuenta?{" "}
             <Link
               href="/login"
               className="font-semibold text-blue-600 hover:text-blue-700"
             >
-              Inicia sesion
+              Inicia sesión
             </Link>
           </div>
         </div>

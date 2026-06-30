@@ -1,5 +1,5 @@
 import { getAuthorizedCompanyForSunatRequest } from "@/app/api/sunat/sire/_lib/companyAccess";
-import { privateJson } from "@/app/api/sunat/sire/_lib/http";
+import { privateJson, toPublicErrorMessage } from "@/app/api/sunat/sire/_lib/http";
 import { listSireSalesTicketsPageForCompany } from "@/services/sunat/sireService";
 
 function parsePositiveInt(value: string | null, fallback: number) {
@@ -44,13 +44,11 @@ export async function GET(request: Request) {
     });
 
     return privateJson({
-      tickets: [],
-      page: 1,
-      perPage: 8,
-      totalCount: 0,
-      totalPages: 1,
-      hasNextPage: false,
-      hasPreviousPage: false,
-    });
+      error: toPublicErrorMessage(
+        error,
+        "No pudimos cargar el historial de tickets en este momento. Vuelve a intentarlo en unos segundos."
+      ),
+      retryable: true,
+    }, { status: 503 });
   }
 }

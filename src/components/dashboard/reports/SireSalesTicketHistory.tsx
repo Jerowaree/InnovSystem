@@ -41,6 +41,7 @@ interface SireSalesTicketHistoryProps {
   currentPage: number;
   hasNextPage: boolean;
   hasPreviousPage: boolean;
+  historyStatusMessage?: string | null;
   isLoadingHistory: boolean;
   onDownloadTicket: (ticket: SireSalesTicketSummary) => void;
   onNextPage: () => void;
@@ -55,6 +56,7 @@ export function SireSalesTicketHistory({
   currentPage,
   hasNextPage,
   hasPreviousPage,
+  historyStatusMessage,
   isLoadingHistory,
   onDownloadTicket,
   onNextPage,
@@ -119,6 +121,12 @@ export function SireSalesTicketHistory({
           {totalCount === 1 ? "" : "s"}
         </span>
       </div>
+
+      {historyStatusMessage ? (
+        <div className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+          {historyStatusMessage}
+        </div>
+      ) : null}
 
       <div className="mt-4 overflow-x-auto rounded-2xl border border-slate-200 bg-white">
         <div className="min-w-[720px]">

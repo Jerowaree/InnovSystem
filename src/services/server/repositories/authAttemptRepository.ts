@@ -1,11 +1,12 @@
-import { supabaseServerClient } from "@/lib/supabaseServerClient";
+import { getSupabaseServerClient } from "@/lib/supabaseServerClient";
 
 export async function countRecentAuthAttempts(input: {
   action: string;
   subject: string;
   sinceIso: string;
 }) {
-  const { count, error } = await supabaseServerClient
+  const supabase = getSupabaseServerClient();
+  const { count, error } = await supabase
     .from("auth_attempts")
     .select("*", { count: "exact", head: true })
     .eq("action", input.action)
@@ -19,7 +20,8 @@ export async function createAuthAttempt(input: {
   action: string;
   subject: string;
 }) {
-  const { data, error } = await supabaseServerClient
+  const supabase = getSupabaseServerClient();
+  const { data, error } = await supabase
     .from("auth_attempts")
     .insert([
       {
@@ -34,7 +36,8 @@ export async function createAuthAttempt(input: {
 }
 
 export async function deleteOldAuthAttempts(beforeIso: string) {
-  const { error } = await supabaseServerClient
+  const supabase = getSupabaseServerClient();
+  const { error } = await supabase
     .from("auth_attempts")
     .delete()
     .lt("created_at", beforeIso);

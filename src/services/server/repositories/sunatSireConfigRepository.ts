@@ -1,8 +1,9 @@
-import { supabaseServerClient } from "@/lib/supabaseServerClient";
+import { getSupabaseServerClient } from "@/lib/supabaseServerClient";
 import type { SunatSireConfig } from "@/types/db";
 
 export async function getSunatSireConfigByCompanyIdServer(companyId: string) {
-  const { data, error } = await supabaseServerClient
+  const supabase = getSupabaseServerClient();
+  const { data, error } = await supabase
     .from("sunat_sire_configs")
     .select("*")
     .eq("company_id", companyId)
@@ -15,7 +16,8 @@ export async function upsertSunatSireConfigServer(
   config: Omit<SunatSireConfig, "id" | "created_at" | "updated_at">
 ) {
   const timestamp = new Date().toISOString();
-  const { data, error } = await supabaseServerClient
+  const supabase = getSupabaseServerClient();
+  const { data, error } = await supabase
     .from("sunat_sire_configs")
     .upsert(
       [
@@ -40,7 +42,8 @@ export async function updateSunatSireConfigTestResultServer(input: {
   lastTestMessage: string;
   lastTestedAt: string;
 }) {
-  const { data, error } = await supabaseServerClient
+  const supabase = getSupabaseServerClient();
+  const { data, error } = await supabase
     .from("sunat_sire_configs")
     .update({
       last_test_status: input.lastTestStatus,

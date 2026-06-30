@@ -1,4 +1,3 @@
-import { getAuthErrorMessage } from "@/lib/authErrorMessages";
 import { supabase } from "@/lib/supabaseClient";
 
 export async function loginUser(email: string, password: string) {
@@ -19,28 +18,7 @@ export async function loginUser(email: string, password: string) {
     };
   }
 
-  const session = data.session;
-
-  if (!session?.access_token || !session?.refresh_token) {
-    return {
-      data: null,
-      error: new Error("No pudimos completar el ingreso a tu cuenta."),
-    };
-  }
-
-  const sessionResult = await supabase.auth.setSession({
-    access_token: session.access_token,
-    refresh_token: session.refresh_token,
-  });
-
-  if (sessionResult.error) {
-    return {
-      data: null,
-      error: new Error(getAuthErrorMessage(sessionResult.error.message)),
-    };
-  }
-
-  return { data: sessionResult.data, error: null };
+  return { data, error: null };
 }
 
 export async function logoutUser() {

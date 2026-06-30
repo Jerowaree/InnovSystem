@@ -1,4 +1,5 @@
 import {
+  getSireDashboardContextForCompany,
   saveSireConfigForCompany,
   toFriendlySunatMessage,
   validateSireConfigPayload,
@@ -10,6 +11,8 @@ import {
 import { decryptSecret } from "@/lib/server/secretCipher";
 import type { SunatSireConfig } from "@/types/db";
 import type { SireConfigFormData } from "@/types/sire";
+import * as sireConfigModule from "@/services/sunat/sire/config";
+import * as sireApiModule from "@/services/sunat/sire/api";
 
 jest.mock("@/services/server/repositories/sunatSireConfigRepository", () => ({
   getSunatSireConfigByCompanyIdServer: jest.fn(),
@@ -22,12 +25,42 @@ jest.mock("@/services/server/repositories/sunatSireSalesTicketRepository", () =>
   upsertSunatSireSalesTicketServer: jest.fn(),
 }));
 
+jest.mock("@/services/sunat/sire/config", () => {
+  const actual = jest.requireActual("@/services/sunat/sire/config");
+
+  return {
+    ...actual,
+    getSireConfigSummary: jest.fn(actual.getSireConfigSummary),
+    getCompanySireCredentials: jest.fn(actual.getCompanySireCredentials),
+  };
+});
+
+jest.mock("@/services/sunat/sire/api", () => {
+  const actual = jest.requireActual("@/services/sunat/sire/api");
+
+  return {
+    ...actual,
+    getCachedSireAccessToken: jest.fn(actual.getCachedSireAccessToken),
+    fetchSirePeriods: jest.fn(actual.fetchSirePeriods),
+  };
+});
+
 const mockedGetSunatSireConfigByCompanyIdServer = jest.mocked(
   getSunatSireConfigByCompanyIdServer
 );
 const mockedUpsertSunatSireConfigServer = jest.mocked(
   upsertSunatSireConfigServer
 );
+const mockedGetSireConfigSummary = jest.mocked(
+  sireConfigModule.getSireConfigSummary
+);
+const mockedGetCompanySireCredentials = jest.mocked(
+  sireConfigModule.getCompanySireCredentials
+);
+const mockedGetCachedSireAccessToken = jest.mocked(
+  sireApiModule.getCachedSireAccessToken
+);
+const mockedFetchSirePeriods = jest.mocked(sireApiModule.fetchSirePeriods);
 
 const validPayload: SireConfigFormData = {
   ruc: "20123456789",
@@ -243,5 +276,72 @@ describe("toFriendlySunatMessage", () => {
         "Unprocessable Entity - No se encontro el ticket para el periodo consultado"
       )
     ).toBe("No se encontro el ticket para el periodo seleccionado.");
+  });
+});
+
+describe("getSireDashboardContextForCompany", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("devuelve un contexto seguro cuando falla la carga de configuracion", async () => {
+    mockedGetSireConfigSummary.mockRejectedValueOnce(new Error("DB timeout"));
+
+    const result = await getSireDashboardContextForCompany("company-123");
+
+    expect(result).toEqual({
+      config: null,
+      periodCodes: [],
+      availability: "unavailable",
+      message: "DB timeout",
+    });
+  });
+
+  it("marca SIRE como disponible cuando obtiene periodos validos", async () => {
+    mockedGetSireConfigSummary.mockResolvedValueOnce({
+      id: "cfg-1",
+      companyId: "company-456",
+      ruc: "20123456789",
+      solUser: "MODDATOS",
+      clientId: "client-id",
+      securityBaseUrl: "https://api-seguridad.sunat.gob.pe",
+      apiBaseUrl: "https://api-sire.sunat.gob.pe",
+      hasSolPassword: true,
+      hasClientSecret: true,
+      createdAt: "2026-06-22T10:00:00.000Z",
+      updatedAt: "2026-06-22T10:05:00.000Z",
+      lastTestedAt: null,
+      lastTestStatus: null,
+      lastTestMessage: null,
+    });
+    mockedGetCompanySireCredentials.mockResolvedValueOnce({
+      ruc: "20123456789",
+      solUser: "MODDATOS",
+      solPassword: "secret",
+      clientId: "client-id",
+      clientSecret: "client-secret",
+      securityBaseUrl: "https://api-seguridad.sunat.gob.pe",
+      apiBaseUrl: "https://api-sire.sunat.gob.pe",
+    });
+    mockedGetCachedSireAccessToken.mockResolvedValueOnce("access-token");
+    mockedFetchSirePeriods.mockResolvedValueOnce([
+      {
+        numEjercicio: "2026",
+        desEstado: "Disponible",
+        lisPeriodos: [
+          {
+            perTributario: "202605",
+            codEstado: "1",
+            desEstado: "Disponible",
+          },
+        ],
+      },
+    ]);
+
+    const result = await getSireDashboardContextForCompany("company-456");
+
+    expect(result.availability).toBe("available");
+    expect(result.periodCodes).toEqual(["202605"]);
+    expect(result.message).toBeNull();
   });
 });

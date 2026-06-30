@@ -1,12 +1,13 @@
-import { supabaseServerClient } from "@/lib/supabaseServerClient";
+import { getSupabaseServerClient } from "@/lib/supabaseServerClient";
 import type { SunatSireSalesTicket } from "@/types/db";
 
 export async function upsertSunatSireSalesTicketServer(
   ticket: Omit<SunatSireSalesTicket, "id" | "created_at" | "updated_at">
 ) {
   const timestamp = new Date().toISOString();
+  const supabase = getSupabaseServerClient();
 
-  const { data, error } = await supabaseServerClient
+  const { data, error } = await supabase
     .from("sunat_sire_sales_tickets")
     .upsert(
       [
@@ -29,7 +30,8 @@ export async function getSunatSireSalesTicketByCompanyAndNumberServer(
   companyId: string,
   ticketNumber: string
 ) {
-  const { data, error } = await supabaseServerClient
+  const supabase = getSupabaseServerClient();
+  const { data, error } = await supabase
     .from("sunat_sire_sales_tickets")
     .select("*")
     .eq("company_id", companyId)
@@ -40,7 +42,8 @@ export async function getSunatSireSalesTicketByCompanyAndNumberServer(
 }
 
 export async function listSunatSireSalesTicketsByCompanyServer(companyId: string) {
-  const { data, error } = await supabaseServerClient
+  const supabase = getSupabaseServerClient();
+  const { data, error } = await supabase
     .from("sunat_sire_sales_tickets")
     .select("*")
     .eq("company_id", companyId)
@@ -63,8 +66,9 @@ export async function listSunatSireSalesTicketsByCompanyPaginatedServer(
   const safePerPage = Math.min(50, Math.max(1, input.perPage));
   const from = (safePage - 1) * safePerPage;
   const to = from + safePerPage - 1;
+  const supabase = getSupabaseServerClient();
 
-  const { data, error, count } = await supabaseServerClient
+  const { data, error, count } = await supabase
     .from("sunat_sire_sales_tickets")
     .select("*", { count: "exact" })
     .eq("company_id", companyId)
